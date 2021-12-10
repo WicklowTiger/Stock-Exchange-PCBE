@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
@@ -27,8 +29,9 @@ public class App extends Application {
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+        FileInputStream fileInputStream = new FileInputStream(new File("src/main/resources/jfx/" + fxml + ".fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        return fxmlLoader.load(fileInputStream);
     }
 
     public static void main(String[] args) {
