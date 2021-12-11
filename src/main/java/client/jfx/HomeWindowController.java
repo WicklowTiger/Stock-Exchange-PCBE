@@ -1,4 +1,4 @@
-package client.jfx;
+package jfx;
 
 import java.net.URL;
 import java.util.Random;
@@ -21,10 +21,12 @@ public class HomeWindowController implements Initializable {
    @FXML private TextField filterField;
    @FXML private TextField setPrice;
    @FXML private TableView<Stock> tableview;
-   @FXML private TableView<String> sellTable;
-   @FXML private TableView<String> buyTable;
+   @FXML private TableView<Order> sellTable;
+   @FXML private TableView<Order> buyTable;
    @FXML private TableColumn<Stock, String> name;
    @FXML private TableColumn<Stock, String> price;
+   @FXML private TableColumn<Order,String> sellOrders;
+   @FXML private TableColumn<Order,String> buyOrders;
    @FXML private Text stockName;
    @FXML private Text recommended;
    @FXML private Text companyName;
@@ -33,8 +35,8 @@ public class HomeWindowController implements Initializable {
    @FXML private Button sellButton;
 
    private final ObservableList<Stock> dataList = FXCollections.observableArrayList();
-   private ObservableList<String> buyList = FXCollections.observableArrayList();
-   private ObservableList<String> sellList = FXCollections.observableArrayList();
+   private ObservableList<Order> buyList = FXCollections.observableArrayList();
+   private ObservableList<Order> sellList = FXCollections.observableArrayList();
    enum Technical {
         NEUTRAL,
         BUY,
@@ -50,6 +52,8 @@ public class HomeWindowController implements Initializable {
    public void initialize(URL url, ResourceBundle rb){
        name.setCellValueFactory(new PropertyValueFactory<>("name"));
        price.setCellValueFactory(new PropertyValueFactory<>("price"));
+       sellOrders.setCellValueFactory(new PropertyValueFactory<>("price"));
+       buyOrders.setCellValueFactory(new PropertyValueFactory<>("price"));
        Stock stock1 = new Stock("ALPHABET_A", "30", "Google","2000");
        Stock stock2 = new Stock("ALPHABET_B", "20", "Google","3000");
        Stock stock3 = new Stock("MSFT", "25", "Microsoft","4000");
@@ -123,7 +127,8 @@ public class HomeWindowController implements Initializable {
            }
            else{
                System.out.println("bought " + stock.getName() + " for " + price);
-               buyList.add(setPrice.getText());
+               buyList.add(new Order(setPrice.getText()));
+
            }
        }
        else{
@@ -142,7 +147,8 @@ public class HomeWindowController implements Initializable {
            }
            else{
                System.out.println("sold " + stock.getName() + " for " + price);
-               sellList.add(setPrice.getText());
+               sellList.add(new Order(setPrice.getText()));
+
            }
        }
        else{
