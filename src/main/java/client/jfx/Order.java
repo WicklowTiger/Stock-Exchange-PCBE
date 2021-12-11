@@ -1,4 +1,4 @@
-package jfx;
+package client.jfx;
 
 public class Order {
     private String price;
