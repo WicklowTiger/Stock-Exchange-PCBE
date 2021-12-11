@@ -1,4 +1,4 @@
-package jfx;
+package client.jfx;
 
 import java.net.URL;
 import java.util.Random;
