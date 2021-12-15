@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 
+import client.ClientActionsManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -17,8 +18,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
-import shared.Order;
-import shared.Stock;
+import shared.*;
 
 public class HomeWindowController implements Initializable {
     private static HomeWindowController inst = null;
@@ -107,12 +107,12 @@ public class HomeWindowController implements Initializable {
 
        buyButton.setOnMouseClicked((MouseEvent event)->{
            if(event.getClickCount() > 0) {
-               buyStock();
+               handleTradeAction(ActionType.SEND_BUY);
            }
        });
        sellButton.setOnMouseClicked((MouseEvent event)->{
            if(event.getClickCount() > 0) {
-               sellStock();
+               handleTradeAction(ActionType.SEND_SELL);
            }
        });
 
@@ -141,9 +141,7 @@ public class HomeWindowController implements Initializable {
        }
    }
 
-   public void buyStock() {
-       int price = Integer.parseInt(setPrice.getText());
-       int amount = Integer.parseInt(setAmount.getText());
+   public void buyStock(float amount, float price) {
        String orderType = (String) typeCombo.getValue();
        if (tableview.getSelectionModel().getSelectedItem() != null) {
            Stock stock = tableview.getSelectionModel().getSelectedItem();
@@ -154,13 +152,11 @@ public class HomeWindowController implements Initializable {
                    sell_alert.show();
                }
                else{
-                   System.out.println(orderType + " BUY " + stock.getName() + " "+ amount + "@" + price);
-                   sellList.add(new Order(setPrice.getText()));
-
+                   ClientActionsManager.putAction(new Action(ActionType.SEND_BUY, stock.getName() + "," + amount + "," + price));
                }
            }
            else{
-               System.out.println(orderType + " BUY " + stock.getName() + " "+ amount + "@" + stock.getPrice());
+               ClientActionsManager.putAction(new Action(ActionType.SEND_BUY, stock.getName() + "," + amount));
            }
        }
        else{
@@ -169,9 +165,12 @@ public class HomeWindowController implements Initializable {
        }
    }
 
-   public void sellStock(){
-       int price = Integer.parseInt(setPrice.getText());
-       int amount = Integer.parseInt(setAmount.getText());
+   public void buyStock(float amount) {
+       System.out.println("hello");
+       this.buyStock(amount, -1f);
+   }
+
+   public void sellStock(float amount, float price){
        String orderType = (String) typeCombo.getValue();
        if (tableview.getSelectionModel().getSelectedItem() != null) {
            Stock stock = tableview.getSelectionModel().getSelectedItem();
@@ -182,13 +181,13 @@ public class HomeWindowController implements Initializable {
                    sell_alert.show();
                }
                else{
-                   System.out.println(orderType + " SELL " + stock.getName() + " "+ amount + "@" + price);
+                   ClientActionsManager.putAction(new Action(ActionType.SEND_SELL, stock.getName() + "," + amount + "," + price));
                    sellList.add(new Order(setPrice.getText()));
 
                }
            }
            else{
-               System.out.println(orderType + " SELL " + stock.getName() + " "+ amount + "@" + stock.getPrice());
+               ClientActionsManager.putAction(new Action(ActionType.SEND_SELL, stock.getName() + "," + amount));
            }
 
        }
@@ -198,6 +197,44 @@ public class HomeWindowController implements Initializable {
        }
    }
 
+    public void sellStock(float amount) {
+        this.sellStock(amount, -1f);
+    }
+
+   public void handleTradeAction(ActionType actionType) {
+       if (!this.checkInputFields()) { return; }
+       float price = -1f, amount = -1f;
+       String orderType = (String) typeCombo.getValue();
+       switch (orderType.toLowerCase()) {
+           case "limit":
+               try {
+                   price = Float.parseFloat(setPrice.getText());
+                   amount = Float.parseFloat(setAmount.getText());
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
+               if (actionType == ActionType.SEND_BUY) {
+                   buyStock(amount, price);
+               } else if (actionType == ActionType.SEND_SELL) {
+                   sellStock(amount, price);
+               }
+               break;
+           case "market":
+               try {
+                   amount = Float.parseFloat(setAmount.getText());
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
+               if (actionType == ActionType.SEND_BUY) {
+                   buyStock(amount);
+               } else if (actionType == ActionType.SEND_SELL) {
+                   sellStock(amount);
+               }
+               break;
+           default:
+               break;
+       }
+   }
 
    public static void addStock(Stock stock) {
        dataList.add(stock);
@@ -210,5 +247,20 @@ public class HomeWindowController implements Initializable {
            e.printStackTrace();
        }
        return inst;
+    }
+
+    private boolean checkInputFields() {
+        String orderType = (String) typeCombo.getValue();
+        switch (orderType) {
+            case "limit":
+                if(setPrice.getText().equals("") || setAmount.getText().equals("")) { return false; }
+                break;
+            case "market":
+                if(setAmount.getText().equals("")) { return false; }
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 }
