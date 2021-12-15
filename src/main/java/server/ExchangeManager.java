@@ -1,5 +1,7 @@
 package server;
 
+import shared.TradeAction;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,13 +12,6 @@ enum ErrorMessage {
     INSUFFICIENT_FUNDS,
     INSUFFICIENT_STOCK,
     UNKNOWN_ERROR,
-}
-
-enum TradeAction {
-    MARKET_BUY,
-    MARKET_SELL,
-    LIMIT_BUY,
-    LIMIT_SELL,
 }
 
 /**

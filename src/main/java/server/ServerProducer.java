@@ -1,4 +1,4 @@
-package client;
+package server;
 
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.Serializer;
@@ -12,30 +12,26 @@ import java.util.Properties;
 
 
 /**
- * Used by the {@link TradeManager} to send buy/sell messages to kafka.
- * <br>
- * Configuration is set when object is instantiated (check constructor).
+ * Sends trade replies and stock updates after each trade
  */
-public class ClientProducer<K, V> {
-    private final Logger logger = LoggerFactory.getLogger(ClientProducer.class);
+public class ServerProducer<K, V> {
+    private final Logger logger = LoggerFactory.getLogger(ServerProducer.class);
     private final KafkaProducer<K, V> producer;
-    private final String topic;
 
-    public <T extends Serializer<K>, U extends Serializer<V>> ClientProducer(T keySerializer, U valueSerializer, String topic) {
+    public <T extends Serializer<K>, U extends Serializer<V>> ServerProducer(T keySerializer, U valueSerializer) {
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, Const.bootstrapServerIP);
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer.getClass().getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer.getClass().getName());
 
         this.producer = new KafkaProducer<K, V>(properties);
-        this.topic = topic;
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.info("stopping application...");
+            logger.info("stopping server producer...");
         }));
     }
 
-    public void sendMessage(V value, MessageOptions<K> opts) {
+    public void sendMessage(String topic, V value, MessageOptions<K> opts) {
         producer.send(new ProducerRecord<K, V>(topic, value));
         producer.flush();
     }

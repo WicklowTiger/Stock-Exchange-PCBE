@@ -2,8 +2,10 @@ package client.jfx;
 
 import java.net.URL;
 import java.util.Observable;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,9 +17,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
+import shared.Order;
+import shared.Stock;
 
 public class HomeWindowController implements Initializable {
-
+    private static HomeWindowController inst = null;
+    public static final CountDownLatch latch = new CountDownLatch(1);
 
    @FXML private TextField filterField;
    @FXML private TextField setPrice;
@@ -38,7 +43,7 @@ public class HomeWindowController implements Initializable {
    @FXML private ComboBox typeCombo;
    @FXML private Text priceLabel;
 
-   private final ObservableList<Stock> dataList = FXCollections.observableArrayList();
+   private static ObservableList<Stock> dataList = FXCollections.observableArrayList();
    private ObservableList<Order> buyList = FXCollections.observableArrayList();
    private ObservableList<Order> sellList = FXCollections.observableArrayList();
    enum Technical {
@@ -70,7 +75,7 @@ public class HomeWindowController implements Initializable {
 
        FilteredList<Stock> filteredData = new FilteredList<>(dataList);
 
-       filterField.textProperty().addListener((observable,oldValue,newValue)->{
+       filterField.textProperty().addListener((observable, oldValue, newValue)->{
            filteredData.setPredicate(stock->{
                if(newValue == null || newValue.isEmpty()){
                    return true;
@@ -122,6 +127,8 @@ public class HomeWindowController implements Initializable {
            }
        });
 
+       inst = this;
+       latch.countDown();
    }
 
    public void showDetailedStockData(){
@@ -192,4 +199,16 @@ public class HomeWindowController implements Initializable {
    }
 
 
+   public static void addStock(Stock stock) {
+       dataList.add(stock);
+   }
+
+   public static HomeWindowController getInstance() {
+       try {
+           latch.await();
+       } catch (InterruptedException e) {
+           e.printStackTrace();
+       }
+       return inst;
+    }
 }
