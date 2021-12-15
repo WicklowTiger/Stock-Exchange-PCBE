@@ -1,6 +1,10 @@
 package client;
 
 import org.apache.kafka.common.serialization.StringSerializer;
+import shared.MessageOptions;
+import shared.TradeAction;
+import shared.TradeMessage;
+import shared.User;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -12,39 +16,10 @@ import java.lang.reflect.Method;
 class TradeManager implements InvocationHandler {
     private static TradeManager inst = null;
     private static ClientProducer<String, String> clientProducer;
-    /** user type TBD */
-    private Object user;
+    private User user;
 
     private TradeManager() {
-        clientProducer = new ClientProducer<String, String>(new StringSerializer(), new StringSerializer());
-    }
-
-    public void setUser(Object user) {
-        this.user = user;
-    }
-
-    public void buyStock(String stockName, Float amount, Float price) {
-        if(price == null) {
-            System.out.println("market buy order");
-        } else {
-            System.out.println("limit buy order");
-        }
-    }
-
-    public void buyStock(String stockName, Float amount) {
-        buyStock(stockName, amount, null);
-    }
-
-    public void sellStock(String stockName, Float amount, Float price) {
-        if(price == null) {
-            System.out.println("market sell order");
-        } else {
-            System.out.println("limit sell order");
-        }
-    }
-
-    public void sellStock(String stockName, Float amount) {
-        sellStock(stockName, amount, null);
+        clientProducer = new ClientProducer<String, String>(new StringSerializer(), new StringSerializer(), "tradeMessages");
     }
 
     public static TradeManager getInstance() {
@@ -54,7 +29,45 @@ class TradeManager implements InvocationHandler {
         return inst;
     }
 
-    public void exit() {
+    public void handleSellAction(String message) {
+        try {
+            TradeMessage tradeMessage = TradeMessage.fromString(this.user, message);
+            sendSell(tradeMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void handleBuyAction(String message) {
+        try {
+            TradeMessage tradeMessage = TradeMessage.fromString(this.user, message);
+            sendBuy(tradeMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void sendSell(TradeMessage tradeMessage) {
+        if(tradeMessage.price == null) {
+            clientProducer.sendMessage(TradeAction.MARKET_BUY.toString() + ',' + tradeMessage, new MessageOptions<String>());
+        } else {
+            clientProducer.sendMessage(TradeAction.LIMIT_BUY.toString() + ',' + tradeMessage, new MessageOptions<String>());
+        }
+    }
+
+    public void sendBuy(TradeMessage tradeMessage) {
+        if(tradeMessage.price == null) {
+            clientProducer.sendMessage(TradeAction.MARKET_SELL.toString() + ',' + tradeMessage, new MessageOptions<String>());
+        } else {
+            clientProducer.sendMessage(TradeAction.LIMIT_SELL.toString() + ',' + tradeMessage, new MessageOptions<String>());
+        }
+    }
+
+    public void stop() {
         clientProducer.stop();
     }
 
@@ -66,7 +79,7 @@ class TradeManager implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object result;
         try {
-            if (method.getName().endsWith("Stock")) {
+            if (method.getName().startsWith("send")) {
                 this.checkUserExists();
             }
             result = method.invoke(this, args);
