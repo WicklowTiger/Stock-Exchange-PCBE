@@ -1,6 +1,7 @@
 package client.jfx;
 
 import java.net.URL;
+import java.util.Observable;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -20,6 +21,7 @@ public class HomeWindowController implements Initializable {
 
    @FXML private TextField filterField;
    @FXML private TextField setPrice;
+   @FXML private TextField setAmount;
    @FXML private TableView<Stock> tableview;
    @FXML private TableView<Order> sellTable;
    @FXML private TableView<Order> buyTable;
@@ -33,6 +35,8 @@ public class HomeWindowController implements Initializable {
    @FXML private Text companyMC;
    @FXML private Button buyButton;
    @FXML private Button sellButton;
+   @FXML private ComboBox typeCombo;
+   @FXML private Text priceLabel;
 
    private final ObservableList<Stock> dataList = FXCollections.observableArrayList();
    private ObservableList<Order> buyList = FXCollections.observableArrayList();
@@ -50,6 +54,7 @@ public class HomeWindowController implements Initializable {
 
    @Override
    public void initialize(URL url, ResourceBundle rb){
+       typeCombo.getSelectionModel().select(1);
        name.setCellValueFactory(new PropertyValueFactory<>("name"));
        price.setCellValueFactory(new PropertyValueFactory<>("price"));
        sellOrders.setCellValueFactory(new PropertyValueFactory<>("price"));
@@ -105,6 +110,18 @@ public class HomeWindowController implements Initializable {
                sellStock();
            }
        });
+
+       typeCombo.getSelectionModel().selectedItemProperty().addListener((options,oldvalue,newvalue)->{
+           if(newvalue.toString().toLowerCase().equals("market")){
+               setPrice.setVisible(false);
+               priceLabel.setVisible(false);
+           }
+           else{
+               setPrice.setVisible(true);
+               priceLabel.setVisible(true);
+           }
+       });
+
    }
 
    public void showDetailedStockData(){
@@ -119,16 +136,24 @@ public class HomeWindowController implements Initializable {
 
    public void buyStock() {
        int price = Integer.parseInt(setPrice.getText());
+       int amount = Integer.parseInt(setAmount.getText());
+       String orderType = (String) typeCombo.getValue();
        if (tableview.getSelectionModel().getSelectedItem() != null) {
            Stock stock = tableview.getSelectionModel().getSelectedItem();
-           if(price > Integer.parseInt(stock.getPrice())){
-               Alert buy_alert = new Alert(Alert.AlertType.INFORMATION,"Price needs to be lower than stock price for buy order");
-               buy_alert.show();
+           if(orderType.toString().toLowerCase().equals("limit"))
+           {
+               if(price > Integer.parseInt(stock.getPrice())){
+                   Alert sell_alert = new Alert(Alert.AlertType.INFORMATION,"Price needs to be lower than stock price for sell order");
+                   sell_alert.show();
+               }
+               else{
+                   System.out.println(orderType + " BUY " + stock.getName() + " "+ amount + "@" + price);
+                   sellList.add(new Order(setPrice.getText()));
+
+               }
            }
            else{
-               System.out.println("bought " + stock.getName() + " for " + price);
-               buyList.add(new Order(setPrice.getText()));
-
+               System.out.println(orderType + " BUY " + stock.getName() + " "+ amount + "@" + stock.getPrice());
            }
        }
        else{
@@ -139,17 +164,26 @@ public class HomeWindowController implements Initializable {
 
    public void sellStock(){
        int price = Integer.parseInt(setPrice.getText());
+       int amount = Integer.parseInt(setAmount.getText());
+       String orderType = (String) typeCombo.getValue();
        if (tableview.getSelectionModel().getSelectedItem() != null) {
            Stock stock = tableview.getSelectionModel().getSelectedItem();
-           if(price < Integer.parseInt(stock.getPrice())){
-               Alert sell_alert = new Alert(Alert.AlertType.INFORMATION,"Price needs to be higher than stock price for sell order");
-               sell_alert.show();
+           if(orderType.toString().toLowerCase().equals("limit"))
+           {
+               if(price < Integer.parseInt(stock.getPrice())){
+                   Alert sell_alert = new Alert(Alert.AlertType.INFORMATION,"Price needs to be higher than stock price for sell order");
+                   sell_alert.show();
+               }
+               else{
+                   System.out.println(orderType + " SELL " + stock.getName() + " "+ amount + "@" + price);
+                   sellList.add(new Order(setPrice.getText()));
+
+               }
            }
            else{
-               System.out.println("sold " + stock.getName() + " for " + price);
-               sellList.add(new Order(setPrice.getText()));
-
+               System.out.println(orderType + " SELL " + stock.getName() + " "+ amount + "@" + stock.getPrice());
            }
+
        }
        else{
            Alert stock_selection_alert = new Alert(Alert.AlertType.INFORMATION,"You did not select a stock");
