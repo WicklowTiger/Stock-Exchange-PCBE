@@ -1,6 +1,6 @@
 package server;
 
-import org.apache.kafka.common.serialization.Serializer;
+import org.apache.kafka.common.serialization.Deserializer;
 import shared.Const;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Properties;
 
 /**
@@ -24,8 +24,9 @@ public class ServerConsumer<K, V> {
     private Thread tradingThread;
     /**Implement this as a class with a timeout field*/
     private Thread keepAliveThread;
+    private final ArrayList<String> topicsToReadFrom = new ArrayList<String>();
 
-    public <T extends Serializer<K>, U extends Serializer<V>> ServerConsumer(T keyDeserializer, U valueDeserializer) {
+    public <T extends Deserializer<K>, U extends Deserializer<V>> ServerConsumer(T keyDeserializer, U valueDeserializer, ArrayList<String> topics) {
         Properties properties = new Properties();
 
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, Const.bootstrapServerIP);
@@ -35,6 +36,7 @@ public class ServerConsumer<K, V> {
         properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         this.consumer = new KafkaConsumer<K, V>(properties);
+        this.topicsToReadFrom.addAll(topics);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("stopping application...");
@@ -43,7 +45,7 @@ public class ServerConsumer<K, V> {
 
     /**TODO*/
     public void startListening() {
-        this.consumer.subscribe(Arrays.asList(Const.topicMap.get("tradeTopic")));
+        this.consumer.subscribe(topicsToReadFrom);
         this.tradingThread = new Thread() {
             @Override
             public void run() {
