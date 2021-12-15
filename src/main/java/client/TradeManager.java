@@ -51,7 +51,7 @@ class TradeManager implements InvocationHandler {
         this.user = user;
     }
 
-    public void sendSell(TradeMessage tradeMessage) {
+    public void sendBuy(TradeMessage tradeMessage) {
         if(tradeMessage.price == null) {
             clientProducer.sendMessage(TradeAction.MARKET_BUY.toString() + ',' + tradeMessage, new MessageOptions<String>());
         } else {
@@ -59,7 +59,7 @@ class TradeManager implements InvocationHandler {
         }
     }
 
-    public void sendBuy(TradeMessage tradeMessage) {
+    public void sendSell(TradeMessage tradeMessage) {
         if(tradeMessage.price == null) {
             clientProducer.sendMessage(TradeAction.MARKET_SELL.toString() + ',' + tradeMessage, new MessageOptions<String>());
         } else {
