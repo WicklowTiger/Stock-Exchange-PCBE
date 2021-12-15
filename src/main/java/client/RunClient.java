@@ -18,18 +18,18 @@ public class RunClient {
 
         ClientActionsManager clientActionsManager = ClientActionsManager.getInstance();
         clientActionsManager.run();
-        try {
-            TimeUnit.MILLISECONDS.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        ClientActionsManager.putAction(new Action(ActionType.SEND_BUY, "AAPL,0.5,34.34"));
-        ClientActionsManager.putAction(new Action(ActionType.SEND_BUY, "AAPL,0.5"));
-        try {
-            TimeUnit.MILLISECONDS.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        ClientActionsManager.putAction(new Action(ActionType.SEND_SELL, "AAPL,1.7"));
+//        try {
+//            TimeUnit.MILLISECONDS.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        ClientActionsManager.putAction(new Action(ActionType.SEND_BUY, "AAPL,0.5,34.34"));
+//        ClientActionsManager.putAction(new Action(ActionType.SEND_BUY, "AAPL,0.5"));
+//        try {
+//            TimeUnit.MILLISECONDS.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        ClientActionsManager.putAction(new Action(ActionType.SEND_SELL, "AAPL,1.7"));
     }
 }
