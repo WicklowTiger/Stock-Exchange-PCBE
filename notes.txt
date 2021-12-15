@@ -4,6 +4,12 @@ zookeeper-server-start config\zookeeper.properties
 
 kafka-server-start config\server.properties
 
-ask about:
-- replies
-- multiple consumers/producers
+kafka-topics -zookeeper localhost:2181 -topic <topic_name> -create --partitions <int> --replication-factor <int>
+
+kafka-topics --list --zookeeper localhost:2181
+
+TODO: create abstract class for singletons
+TODO daca e timp: return user from server through message USER_UPDATE
+TODO daca e timp: message opts producer
+
+!!!!!!!!!!!!!!!!!!! UNDER NO CIRCUMSTANCE ATTEMPT TO DELETE A TOPIC !!!!!!!!!!!!!!!!!!!!!!!!
