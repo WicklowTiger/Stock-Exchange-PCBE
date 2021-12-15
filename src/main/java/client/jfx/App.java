@@ -5,17 +5,46 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.kafka.common.serialization.StringSerializer;
+import server.ServerProducer;
+import shared.MessageOptions;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * JavaFX App
  */
 public class App extends Application {
-
     private static Scene scene;
+
+    public static final CountDownLatch latch = new CountDownLatch(1);
+    public static App inst = null;
+
+    public static App waitForApp() {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return inst;
+    }
+
+    public static void setApp(App app) {
+        inst = app;
+        latch.countDown();
+    }
+
+    public App() {
+        setApp(this);
+    }
+
+    public void printSomething() {
+        System.out.println("You called a method on the application");
+    }
+
 
     @Override
     public void start(Stage stage) throws IOException {
