@@ -8,4 +8,8 @@ public class MessageOptions<T> {
         this.key = key;
         this.partition = partition;
     }
+
+    public MessageOptions() {
+
+    }
 }
