@@ -9,6 +9,8 @@ import shared.MessageOptions;
 
 import java.util.Properties;
 
+
+
 /**
  * Used by the {@link TradeManager} to send buy/sell messages to kafka.
  * <br>
@@ -17,36 +19,39 @@ import java.util.Properties;
 public class ClientProducer<K, V> {
     private final Logger logger = LoggerFactory.getLogger(ClientProducer.class);
     private final KafkaProducer<K, V> producer;
+    private final String topic;
 
-    public <T extends Serializer<K>, U extends Serializer<V>> ClientProducer(T keySerializer, U valueSerializer) {
+    public <T extends Serializer<K>, U extends Serializer<V>> ClientProducer(T keySerializer, U valueSerializer, String topic) {
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, Const.bootstrapServerIP);
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer.getClass().getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer.getClass().getName());
 
         this.producer = new KafkaProducer<K, V>(properties);
+        this.topic = topic;
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("stopping application...");
         }));
     }
 
-    public void sendMessage(String topic, V value, MessageOptions<K> opts) {
-        producer.send(new ProducerRecord<K, V>(topic, value), (recordMetadata, e) -> {
-            if (e == null) {
-                logger.info("\nNew recordMetaData: \nTopic: " + recordMetadata.topic() + "\n" +
-                        "Partition: " + recordMetadata.partition() + "\n" +
-                        "Offset: " + recordMetadata.offset() + "\n" +
-                        "Timestamp: " + recordMetadata.timestamp());
-            } else {
-                logger.error("Error while sending message", e);
-            }
-        });
-
+    public void sendMessage(V value, MessageOptions<K> opts) {
+        producer.send(new ProducerRecord<K, V>(topic, value));
         producer.flush();
     }
 
     public void stop() {
         producer.close();
+    }
+
+    void callBackFn(RecordMetadata recordMetadata, Exception e) {
+        if (e == null) {
+            logger.info("\nNew recordMetaData: \nTopic: " + recordMetadata.topic() + "\n" +
+                    "Partition: " + recordMetadata.partition() + "\n" +
+                    "Offset: " + recordMetadata.offset() + "\n" +
+                    "Timestamp: " + recordMetadata.timestamp());
+        } else {
+            logger.error("Error while sending message", e);
+        }
     }
 }
