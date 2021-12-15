@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
 
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="608.0" prefWidth="855.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.jfx.HomeWindowController">
    <children>
@@ -104,7 +106,7 @@
       </AnchorPane>
       <AnchorPane layoutX="694.0" layoutY="90.0" prefHeight="474.0" prefWidth="110.0">
          <children>
-            <Text layoutX="14.0" layoutY="158.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Price:" wrappingWidth="61.13671875">
+            <Text fx:id="priceLabel" layoutX="14.0" layoutY="158.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Price:" wrappingWidth="61.13671875">
                <font>
                   <Font size="15.0" />
                </font>
@@ -112,12 +114,21 @@
             <TextField fx:id="setPrice" layoutX="3.0" layoutY="163.0" prefHeight="25.0" prefWidth="105.0" />
             <Button fx:id="buyButton" layoutX="4.0" layoutY="237.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="103.0" text="Buy" />
             <Button fx:id="sellButton" layoutX="4.0" layoutY="302.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="103.0" text="Sell" />
-            <ComboBox fx:id="typeCombo" layoutX="5.0" layoutY="47.0" prefHeight="25.0" prefWidth="101.0" promptText="Market" />
+            <ComboBox fx:id="typeCombo" layoutX="5.0" layoutY="47.0" prefHeight="25.0" prefWidth="101.0" promptText="Select type">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:id="market" fx:value="Market" />
+                     <String fx:id="limit" fx:value="Limit" />
+                  </FXCollections>
+               </items>
+            </ComboBox>
             <Text layoutX="14.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Type:" wrappingWidth="43.13671875">
                <font>
                   <Font size="15.0" />
                </font>
             </Text>
+            <TextField fx:id="setAmount" layoutX="3.0" layoutY="111.0" prefHeight="25.0" prefWidth="105.0" />
+            <Text layoutX="14.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Amount" />
          </children>
       </AnchorPane>
       <Text layoutX="14.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Stock Exchange PCBE" wrappingWidth="227.13671875">
