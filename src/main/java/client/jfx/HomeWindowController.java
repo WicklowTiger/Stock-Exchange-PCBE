@@ -1,11 +1,11 @@
 package client.jfx;
 
 import java.net.URL;
-import java.util.Observable;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -43,7 +43,7 @@ public class HomeWindowController implements Initializable {
    @FXML private ComboBox typeCombo;
    @FXML private Text priceLabel;
 
-   private static ObservableList<Stock> dataList = FXCollections.observableArrayList();
+   private static final ObservableList<Stock> dataList = FXCollections.observableArrayList();
    private ObservableList<Order> buyList = FXCollections.observableArrayList();
    private ObservableList<Order> sellList = FXCollections.observableArrayList();
    enum Technical {
@@ -142,6 +142,7 @@ public class HomeWindowController implements Initializable {
    }
 
    public void buyStock() {
+       //TODO: add verification for integer entry
        int price = Integer.parseInt(setPrice.getText());
        int amount = Integer.parseInt(setAmount.getText());
        String orderType = (String) typeCombo.getValue();
@@ -149,13 +150,13 @@ public class HomeWindowController implements Initializable {
            Stock stock = tableview.getSelectionModel().getSelectedItem();
            if(orderType.toString().toLowerCase().equals("limit"))
            {
-               if(price > Integer.parseInt(stock.getPrice())){
+               if(price > Integer.parseInt(stock.getPrice()) ){
                    Alert sell_alert = new Alert(Alert.AlertType.INFORMATION,"Price needs to be lower than stock price for sell order");
                    sell_alert.show();
                }
                else{
                    System.out.println(orderType + " BUY " + stock.getName() + " "+ amount + "@" + price);
-                   sellList.add(new Order(setPrice.getText()));
+                   sellList.add(new Order(setPrice.getText(), setAmount.getText()));
 
                }
            }
@@ -170,6 +171,7 @@ public class HomeWindowController implements Initializable {
    }
 
    public void sellStock(){
+       //TODO: add verification for integer entry
        int price = Integer.parseInt(setPrice.getText());
        int amount = Integer.parseInt(setAmount.getText());
        String orderType = (String) typeCombo.getValue();
@@ -183,7 +185,7 @@ public class HomeWindowController implements Initializable {
                }
                else{
                    System.out.println(orderType + " SELL " + stock.getName() + " "+ amount + "@" + price);
-                   sellList.add(new Order(setPrice.getText()));
+                   sellList.add(new Order(setPrice.getText(), setAmount.getText()));
 
                }
            }
@@ -198,10 +200,45 @@ public class HomeWindowController implements Initializable {
        }
    }
 
+   private static ArrayList<Stock> decodeUpdateMessage(String message){
+       //AAPL,35;MSFT,25
+       ArrayList<Stock> stockList = new ArrayList<Stock>();
+       String[] message_list = message.split(";");
+       for(int i=0;i<message_list.length;i++)
+       {
+           String[] stock_params = message_list[i].split(",");
+           stockList.add(new Stock(stock_params[0], stock_params[1]));
+       }
+       return stockList;
+   }
+   public static void updateStocks(String message){
+       //check if stock exists; if yes, update existing stocks; if not, add it at the end of the datalist
+       ObservableList<Stock> auxDataList = FXCollections.observableArrayList();
+       dataList.forEach(stock->{auxDataList.add(stock);});
 
-   public static void addStock(Stock stock) {
+       ArrayList<Stock> incomingStocksList =  decodeUpdateMessage(message);
+       incomingStocksList.forEach(incomingStock->{
+           AtomicBoolean stockFound = new AtomicBoolean(false);
+           auxDataList.forEach(existingStock->{
+               if(existingStock.getName().equals(incomingStock.getName()))
+               {
+                   existingStock.setPrice(incomingStock.getPrice());
+                   stockFound.set(true);
+               }
+           });
+            if(stockFound.get() == false){
+                auxDataList.add(incomingStock);
+            }
+
+       });
+       dataList.clear();
+       auxDataList.forEach(stock->{dataList.add(stock);});
+   }
+   public static void addStock(Stock stock){
        dataList.add(stock);
    }
+
+
 
    public static HomeWindowController getInstance() {
        try {
