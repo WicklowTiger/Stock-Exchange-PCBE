@@ -23,7 +23,7 @@ public class RunClient {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-//        ClientActionsManager.putAction(new Action(ActionType.SEND_BUY, "AAPL,0.5,34.34"));
+//        ClientActionsManager.putAction(new Action(ActionType.UPDATE_STOCKS, "AAPL,350;MSFT,400"));
 //        ClientActionsManager.putAction(new Action(ActionType.SEND_BUY, "AAPL,0.5"));
 //        try {
 //            TimeUnit.MILLISECONDS.sleep(2000);
