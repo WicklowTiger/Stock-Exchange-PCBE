@@ -62,8 +62,8 @@ public class HomeWindowController implements Initializable {
     private Text priceLabel;
 
     private static final ObservableList<Stock> dataList = FXCollections.observableArrayList();
-    private ObservableList<Order> buyList = FXCollections.observableArrayList();
-    private ObservableList<Order> sellList = FXCollections.observableArrayList();
+    private static ObservableList<Order> buyList = FXCollections.observableArrayList();
+    private static ObservableList<Order> sellList = FXCollections.observableArrayList();
 
     enum Technical {
         NEUTRAL,
@@ -243,6 +243,7 @@ public class HomeWindowController implements Initializable {
         ArrayList<Stock> stockList = new ArrayList<Stock>();
         String[] message_list = message.split(";");
         for (int i = 0; i < message_list.length; i++) {
+            System.out.println(message_list[i]);
             String[] stock_params = message_list[i].split(",");
             if(stock_params.length != 2) { break; }
             stockList.add(new Stock(stock_params[0], Float.parseFloat(stock_params[1])));
@@ -251,6 +252,21 @@ public class HomeWindowController implements Initializable {
     }
 
     public static void updateStocks(String message) {
+        //get the item that was selected before
+        int selectedPosition = -1;
+        Stock selectedStock = inst.tableview.getSelectionModel().getSelectedItem();
+
+        if(selectedStock!=null){
+            if(dataList.size()!=0){
+                for(int i=0;i<dataList.size();i++){
+                    if(dataList.get(i).getName().equals(selectedStock.getName())){
+                        selectedPosition = i;
+                        break;
+                    }
+                }
+            }
+        }
+
         //check if stock exists; if yes, update existing stocks; if not, add it at the end of the datalist
         ObservableList<Stock> auxDataList = FXCollections.observableArrayList();
         auxDataList.addAll(dataList);
@@ -271,6 +287,11 @@ public class HomeWindowController implements Initializable {
         });
         dataList.clear();
         dataList.addAll(auxDataList);
+        if(selectedPosition > -1){
+            inst.tableview.requestFocus();
+            inst.tableview.getSelectionModel().select(selectedPosition);
+            inst.tableview.getFocusModel().focus(selectedPosition);
+        }
     }
 
     public static void openDialogBox(String message) {
@@ -304,4 +325,59 @@ public class HomeWindowController implements Initializable {
         }
         return true;
     }
+
+    public static void decodeOrders(String message){
+        //AAPL,B31-0.39,B32-12,B33-70;MSFT,S80-0.5,400-0.7
+        dataList.forEach(stock->{
+            stock.sellOrders.clear();
+            stock.buyOrders.clear();
+        });
+
+        String[] ordersList = message.split(";");
+        for(int i=0;i<ordersList.length;i++){
+            String[] stockData = ordersList[i].split(",");
+            String stockName = stockData[0];
+            if(stockData.length>1){
+                for(int j=1;j<stockData.length;j++){
+                    char orderType = stockData[j].charAt(0);
+                    stockData[j] = stockData[j].replace("B","");
+                    stockData[j] =  stockData[j].replace("S","");
+                    float price = Float.parseFloat(stockData[j].split("-")[0]);
+                    float amount = Float.parseFloat(stockData[j].split("-")[1]);
+                    if(orderType=='B'){
+                        dataList.forEach(stock->{
+                            if(stock.name.equals(stockName)){
+                                stock.buyOrders.add(new Order(price, amount));
+                            }
+                        });
+                    }
+                    else{
+                        dataList.forEach(stock->{
+                            if(stock.name.equals(stockName)){
+                                stock.sellOrders.add(new Order(price, amount));
+                            }
+                        });
+                    }
+                }
+            }
+
+
+        }
+
+    }
+    public static void updateOrders(String message){
+        decodeOrders(message);
+        if(inst.tableview.getSelectionModel().getSelectedItem()==null)
+            return;
+        sellList.clear();
+        buyList.clear();
+        dataList.forEach(stock->{
+            if(stock.getName().equals(inst.tableview.getSelectionModel().getSelectedItem().getName())){
+                sellList.addAll(stock.sellOrders);
+                buyList.addAll(stock.buyOrders);
+            }
+        });
+    }
+
+
 }

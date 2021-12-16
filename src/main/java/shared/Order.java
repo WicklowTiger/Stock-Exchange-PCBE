@@ -10,6 +10,10 @@ public class Order {
         this.price = price;
         this.amount = amount;
     }
+    public Order( float price, float amount){
+        this.price = price;
+        this.amount = amount;
+    }
 
     public String getPrice() {
         return price.toString();
