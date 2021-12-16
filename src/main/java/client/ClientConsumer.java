@@ -18,7 +18,7 @@ import java.util.Properties;
  * Processes stock update messages and trade replies.
  */
 public class ClientConsumer<K, V> {
-    private final Logger logger = LoggerFactory.getLogger(client.ClientProducer.class);
+    private final Logger logger = LoggerFactory.getLogger(client.ClientConsumer.class);
     private final KafkaConsumer<K, V> consumer;
     private final ArrayList<String> topicsToReadFrom = new ArrayList<String>();
 
@@ -39,23 +39,27 @@ public class ClientConsumer<K, V> {
         }));
     }
 
-    /**
-     * TODO
-     */
     public void startListening() {
         this.consumer.subscribe(this.topicsToReadFrom);
         while (true) {
             ConsumerRecords<K, V> records = ClientConsumer.this.consumer.poll(Duration.ofMillis(100));
             for (ConsumerRecord<K, V> record : records) {
+                String key = "";
+                if(record.key() != null) { key = record.key().toString(); }
                 ClientActionsManager.putAction(
                         new Message<String, String>(
-                                record.key().toString(),
+                                key,
                                 record.value().toString(),
                                 record.topic()
                         )
                 );
             }
+        }
+    }
 
+    public void stop() {
+        if (this.consumer != null) {
+            this.consumer.close();
         }
     }
 }
