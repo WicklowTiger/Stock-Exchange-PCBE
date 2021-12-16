@@ -83,14 +83,6 @@ public class HomeWindowController implements Initializable {
         price.setCellValueFactory(new PropertyValueFactory<>("price"));
         sellOrders.setCellValueFactory(new PropertyValueFactory<>("price"));
         buyOrders.setCellValueFactory(new PropertyValueFactory<>("price"));
-        Stock stock1 = new Stock("ALPHABET_A", "30", "Google", "2000");
-        Stock stock2 = new Stock("ALPHABET_B", "20", "Google", "3000");
-        Stock stock3 = new Stock("MSFT", "25", "Microsoft", "4000");
-        Stock stock4 = new Stock("AAPL", "40", "Apple", "5000");
-        Stock stock5 = new Stock("JNJ", "50", "Johnson and Johnson", "6000");
-        Stock stock6 = new Stock("JPM", "60", "JPMorgan", "7000");
-
-        dataList.addAll(stock1, stock2, stock3, stock4, stock5, stock6);
 
         FilteredList<Stock> filteredData = new FilteredList<>(dataList);
 
@@ -154,7 +146,7 @@ public class HomeWindowController implements Initializable {
             stockName.setText(stock.getName());
             recommended.setText(Technical.getRandomTechnical());
             companyName.setText(stock.getCompanyName());
-            companyMC.setText(stock.getMarketcap());
+            companyMC.setText(stock.getMarketCap());
         }
     }
 
@@ -252,7 +244,8 @@ public class HomeWindowController implements Initializable {
         String[] message_list = message.split(";");
         for (int i = 0; i < message_list.length; i++) {
             String[] stock_params = message_list[i].split(",");
-            stockList.add(new Stock(stock_params[0], stock_params[1]));
+            if(stock_params.length != 2) { break; }
+            stockList.add(new Stock(stock_params[0], Float.parseFloat(stock_params[1])));
         }
         return stockList;
     }
@@ -260,32 +253,28 @@ public class HomeWindowController implements Initializable {
     public static void updateStocks(String message) {
         //check if stock exists; if yes, update existing stocks; if not, add it at the end of the datalist
         ObservableList<Stock> auxDataList = FXCollections.observableArrayList();
-        dataList.forEach(stock -> {
-            auxDataList.add(stock);
-        });
+        auxDataList.addAll(dataList);
 
         ArrayList<Stock> incomingStocksList = decodeUpdateMessage(message);
         incomingStocksList.forEach(incomingStock -> {
             AtomicBoolean stockFound = new AtomicBoolean(false);
             auxDataList.forEach(existingStock -> {
                 if (existingStock.getName().equals(incomingStock.getName())) {
-                    existingStock.setPrice(incomingStock.getPrice());
+                    existingStock.setPrice(incomingStock.price);
                     stockFound.set(true);
                 }
             });
-            if (stockFound.get() == false) {
+            if (!stockFound.get()) {
                 auxDataList.add(incomingStock);
             }
 
         });
         dataList.clear();
-        auxDataList.forEach(stock -> {
-            dataList.add(stock);
-        });
+        dataList.addAll(auxDataList);
     }
 
-    public static void addStock(Stock stock) {
-        dataList.add(stock);
+    public static void openDialogBox(String message) {
+        System.out.println(message);
     }
 
     public static HomeWindowController getInstance() {
