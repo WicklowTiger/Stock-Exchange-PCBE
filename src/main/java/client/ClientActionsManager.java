@@ -26,7 +26,7 @@ public class ClientActionsManager {
         this.hearbeatThread.start();
         consumer = new ClientConsumer<String, String>(new StringDeserializer(), new StringDeserializer(), Const.clientListenTopics);
         tradeManager = TradeManager.getInstance();
-        tradeManager.setUser(Const.defaultUser);
+        tradeManager.setUser(new User(Const.defaultUser.uid, "", 0f));
         HomeWindowController homeWindowController = HomeWindowController.getInstance();
         this.consumerThread = new Thread(consumer::startListening);
         this.consumerThread.start();
@@ -42,7 +42,7 @@ public class ClientActionsManager {
     public static Action messageToAction(Message<String, String> message) {
         switch (message.topic) {
             case TRADE_REPLIES:
-                return new Action(ActionType.ACK_REPLY, message.toString());
+                return new Action(ActionType.ACK_REPLY, message.toStringWithKey());
             case STOCK_UPDATES:
                 return new Action(ActionType.UPDATE_STOCKS, message.toString());
             case USER_UPDATES:
@@ -73,10 +73,14 @@ public class ClientActionsManager {
                             HomeWindowController.updateStocks(entry.getValue().payload);
                             break;
                         case UPDATE_USER:
-                            tradeManager.updateUser(entry.getValue().payload);
+                            if(tradeManager.getUser().uid.equals(entry.getValue().payload.split(",")[0])) {
+                                tradeManager.updateUser(entry.getValue().payload);
+                            }
                             break;
                         case ACK_REPLY:
-                            HomeWindowController.openDialogBox(entry.getValue().payload);
+                            if(tradeManager.getUser().uid.equals(entry.getValue().payload.split(",")[0])) {
+                                HomeWindowController.openDialogBox(entry.getValue().payload);
+                            }
                             break;
                         case SEND_BUY:
                             tradeManager.handleBuyAction(entry.getValue().payload);
