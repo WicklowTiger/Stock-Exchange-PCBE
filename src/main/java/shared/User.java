@@ -9,16 +9,8 @@ public class User implements Identifiable {
     public String name = null;
     public Float balance = null;
     public Map<String, Float> stockBalance = new HashMap<>();
-    public ArrayList<Order> orders = new ArrayList<>();
-
-    public User(String uid, String name, Float balance, Map<String, Float> stockBalance, ArrayList<Order> orders) {
-        this.uid = uid;
-        this.name = name;
-        this.balance = balance;
-        this.stockBalance = stockBalance;
-        this.orders = orders;
-        this.initStockBalance();
-    }
+    public ArrayList<Order> buyOrders = new ArrayList<>();
+    public ArrayList<Order> sellOrders = new ArrayList<>();
 
     public User(String uid, String name, Float balance) {
         this.uid = uid;

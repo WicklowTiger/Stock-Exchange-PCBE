@@ -233,8 +233,8 @@ public class ExchangeManager implements InvocationHandler {
                 } else {
                     connectedUsers.put(entry.getKey(), new_value);
                 }
-                this.broadcastStockUpdates();
             }
+            this.broadcastStockUpdates();
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
