@@ -1,0 +1,88 @@
+.table-view .column-header {
+    -fx-background-color: #1B2B4F;
+	-fx-text-background-color: #F0EAD6;
+}
+
+
+
+
+.background{
+	-fx-background-color: #172443;
+	}
+	
+Text{
+	-fx-font-family:Helvetica,serif;
+	-fx-fill:#F0EAD6;
+}
+
+#title{
+	-fx-font-family:Helvetica,serif;
+	-fx-fill:#F0EAD6;
+	-fx-font-size:30.0;
+	-fx-font-weight:bold;
+	-fx-underline:false;
+}
+
+.indicator{
+	-fx-font-size:18.0;
+}
+
+.data{
+	-fx-font-size:16.0;
+}
+
+.stock-title{
+	-fx-font-size:20.0;
+}
+
+.field{
+	-fx-background-color: #111B33;
+	-fx-text-fill:#F0EAD6;
+	-fx-fill: #111B33;
+	-fx-border:2px solid #133e7c;
+	-fx-focus-color:#314D8F;
+	-fx-control-inner-background:#111A31;
+	-fx-effect:dropshadow(three-pass-box, rgba(0,0,0,0.8), 5, 0, 0, 0);
+}
+
+.combo-box{
+	-fx-text-fill:#F0EAD6;
+	-fx-border:2px solid #133e7c;
+	-fx-focus-color:#314D8F;
+	-fx-control-inner-background:#111A31;
+}
+	
+.box{
+	-fx-background-color: #1B2B4F;
+	-fx-effect:dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+.table{
+	-fx-background-color: #111B33;
+	-fx-fill: #F0EAD6;
+	-fx-text-fill: #F0EAD6;
+	-fx-focus-color:#314D8F;
+	-fx-control-inner-background:#111A31;
+	-fx-effect:dropshadow(three-pass-box, rgba(0,0,0,0.8), 5, 0, 0, 0);
+	-fx-text-background-color: #F0EAD6;
+}
+
+.button{
+	-fx-effect:dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+	-fx-font-family:Helvetica,serif;
+	-fx-font-size: 20.0;
+	-fx-font-weight:bold;
+	-fx-text-fill: white;
+}
+
+.button:armed {
+	-fx-effect:innershadow(three-pass-box,white,10,0,0,0);
+}
+
+#buyButton{
+	-fx-background-color: linear-gradient(from 100% 0% to 100% 150%, green 30%, black 100%);
+}
+
+#sellButton{
+	-fx-background-color: linear-gradient(from 100% 0% to 100% 150%, red 30%, black 100%);
+}
