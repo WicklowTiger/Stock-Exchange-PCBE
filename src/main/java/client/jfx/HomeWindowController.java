@@ -2,16 +2,19 @@ package client.jfx;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import client.ClientActionsManager;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -155,7 +158,7 @@ public class HomeWindowController implements Initializable {
         if (tableview.getSelectionModel().getSelectedItem() != null) {
             Stock stock = tableview.getSelectionModel().getSelectedItem();
             if (orderType.toString().toLowerCase().equals("limit")) {
-                if (price > Integer.parseInt(stock.getPrice())) {
+                if (price > stock.price) {
                     Alert sell_alert = new Alert(Alert.AlertType.INFORMATION, "Price needs to be lower than stock price for sell order");
                     sell_alert.show();
                 } else {
@@ -180,7 +183,7 @@ public class HomeWindowController implements Initializable {
         if (tableview.getSelectionModel().getSelectedItem() != null) {
             Stock stock = tableview.getSelectionModel().getSelectedItem();
             if (orderType.toString().toLowerCase().equals("limit")) {
-                if (price < Integer.parseInt(stock.getPrice())) {
+                if (price < stock.price) {
                     Alert sell_alert = new Alert(Alert.AlertType.INFORMATION, "Price needs to be higher than stock price for sell order");
                     sell_alert.show();
                 } else {
@@ -188,7 +191,7 @@ public class HomeWindowController implements Initializable {
 
                 }
             } else {
-                System.out.println(orderType + " SELL " + stock.getName() + " " + amount + "@" + stock.getPrice());
+                ClientActionsManager.putAction(new Action(ActionType.SEND_SELL, stock.getName() + "," + amount));
             }
 
         } else {
@@ -243,7 +246,6 @@ public class HomeWindowController implements Initializable {
         ArrayList<Stock> stockList = new ArrayList<Stock>();
         String[] message_list = message.split(";");
         for (int i = 0; i < message_list.length; i++) {
-            System.out.println(message_list[i]);
             String[] stock_params = message_list[i].split(",");
             if(stock_params.length != 2) { break; }
             stockList.add(new Stock(stock_params[0], Float.parseFloat(stock_params[1])));
@@ -253,6 +255,8 @@ public class HomeWindowController implements Initializable {
 
     public static void updateStocks(String message) {
         //get the item that was selected before
+        String[] tempArr = message.split("!ORDERS!");
+
         int selectedPosition = -1;
         Stock selectedStock = inst.tableview.getSelectionModel().getSelectedItem();
 
@@ -271,7 +275,7 @@ public class HomeWindowController implements Initializable {
         ObservableList<Stock> auxDataList = FXCollections.observableArrayList();
         auxDataList.addAll(dataList);
 
-        ArrayList<Stock> incomingStocksList = decodeUpdateMessage(message);
+        ArrayList<Stock> incomingStocksList = decodeUpdateMessage(tempArr[0]);
         incomingStocksList.forEach(incomingStock -> {
             AtomicBoolean stockFound = new AtomicBoolean(false);
             auxDataList.forEach(existingStock -> {
@@ -287,15 +291,17 @@ public class HomeWindowController implements Initializable {
         });
         dataList.clear();
         dataList.addAll(auxDataList);
-        if(selectedPosition > -1){
-            inst.tableview.requestFocus();
+        if(selectedPosition > -1) {
             inst.tableview.getSelectionModel().select(selectedPosition);
             inst.tableview.getFocusModel().focus(selectedPosition);
         }
+        updateOrders(tempArr[1]);
     }
 
     public static void openDialogBox(String message) {
-        System.out.println(message);
+        Platform.runLater(() -> {
+            new Alert(Alert.AlertType.INFORMATION, message).show();
+        });
     }
 
     public static HomeWindowController getInstance() {
@@ -341,7 +347,7 @@ public class HomeWindowController implements Initializable {
                 for(int j=1;j<stockData.length;j++){
                     char orderType = stockData[j].charAt(0);
                     stockData[j] = stockData[j].replace("B","");
-                    stockData[j] =  stockData[j].replace("S","");
+                    stockData[j] = stockData[j].replace("S","");
                     float price = Float.parseFloat(stockData[j].split("-")[0]);
                     float amount = Float.parseFloat(stockData[j].split("-")[1]);
                     if(orderType=='B'){
