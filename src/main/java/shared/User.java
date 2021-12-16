@@ -17,12 +17,23 @@ public class User implements Identifiable {
         this.balance = balance;
         this.stockBalance = stockBalance;
         this.orders = orders;
+        this.initStockBalance();
     }
 
     public User(String uid, String name, Float balance) {
         this.uid = uid;
         this.name = name;
         this.balance = balance;
+        this.initStockBalance();
+    }
+
+    public void initStockBalance() {
+        stockBalance.put("ALPHABET_A", 0f);
+        stockBalance.put("ALPHABET_B", 0f);
+        stockBalance.put("MSFT", 0f);
+        stockBalance.put("AAPL", 0f);
+        stockBalance.put("JNJ", 0f);
+        stockBalance.put("JPM", 0f);
     }
 
     @Override
