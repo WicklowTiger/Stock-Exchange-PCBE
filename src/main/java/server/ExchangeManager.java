@@ -193,6 +193,17 @@ public class ExchangeManager implements InvocationHandler {
             broadcastMessage.append(entry.getValue().name).append(',').append(entry.getValue().price).append(";");
         }
         broadcastMessage.deleteCharAt(broadcastMessage.toString().length() - 1);
+        broadcastMessage.append("|ORDERS|");
+        for (Map.Entry<String, Stock> entry : stockDatabase.entrySet()) {
+            if(entry.getValue().buyOrders.size() == 0 && entry.getValue().sellOrders.size() == 0) {continue;}
+            broadcastMessage.append(entry.getValue().name).append(',');
+            for(Order order : entry.getValue().buyOrders) {
+                broadcastMessage.append('B').append(order.toString()).append(',');
+            }
+            for(Order order : entry.getValue().sellOrders) {
+                broadcastMessage.append('S').append(order.toString()).append(',');
+            }
+        }
         serverProducer.sendMessage("stockUpdates", broadcastMessage.toString(), new MessageOptions<>());
     }
 
@@ -225,6 +236,10 @@ public class ExchangeManager implements InvocationHandler {
         stockDatabase.put("AAPL", new Stock("AAPL", 40f, "Apple", "5000"));
         stockDatabase.put("JNJ", new Stock("JNJ", 50f, "Johnson and Johnson", "6000"));
         stockDatabase.put("JPM", new Stock("JPM", 60f, "JPMorgan", "7000"));
+        stockDatabase.get("MSFT").sellOrders.add(new Order(35f, 0.5f));
+        stockDatabase.get("MSFT").sellOrders.add(new Order(36f, 2.03f));
+        stockDatabase.get("AAPL").sellOrders.add(new Order(41f, 3f));
+        stockDatabase.get("AAPL").buyOrders.add(new Order(39f, 2.5f));
     }
 
     private void checkTrade(Trade trade) throws Throwable {
