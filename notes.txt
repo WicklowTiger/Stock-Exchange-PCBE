@@ -8,7 +8,8 @@ kafka-topics -zookeeper localhost:2181 -topic <topic_name> -create --partitions 
 
 kafka-topics --list --zookeeper localhost:2181
 
-TODO: create abstract class for singletons
+TODO: sort sellOrders and buyOrders
+TODO: make client consumer group unique
 TODO daca e timp: update stock price depending on buy/sellorders
 
 !!!!!!!!!!!!!!!!!!! UNDER NO CIRCUMSTANCE ATTEMPT TO DELETE A TOPIC !!!!!!!!!!!!!!!!!!!!!!!!

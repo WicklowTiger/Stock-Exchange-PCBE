@@ -135,7 +135,7 @@ public class HomeWindowController implements Initializable {
 
         tableview.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
-                showDetailedStockData();
+                this.selectStock();
             }
         });
 
@@ -352,6 +352,19 @@ public class HomeWindowController implements Initializable {
                 break;
         }
         return true;
+    }
+
+    private void selectStock() {
+        this.showDetailedStockData();
+        sellList.clear();
+        buyList.clear();
+        dataList.forEach(stock->{
+            if(stock.getName().equals(inst.tableview.getSelectionModel().getSelectedItem().getName())){
+                sellList.addAll(stock.sellOrders);
+                buyList.addAll(stock.buyOrders);
+            }
+        });
+        //TODO: get user data and put it in fields (stock balance)
     }
 
     public static void decodeOrders(String message){
