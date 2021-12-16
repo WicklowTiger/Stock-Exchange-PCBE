@@ -9,8 +9,6 @@ kafka-topics -zookeeper localhost:2181 -topic <topic_name> -create --partitions 
 kafka-topics --list --zookeeper localhost:2181
 
 TODO: create abstract class for singletons
-TODO: producer send async
-TODO daca e timp: return user from server through message USER_UPDATE
-TODO daca e timp: message opts producer
+TODO daca e timp: update stock price depending on buy/sellorders
 
 !!!!!!!!!!!!!!!!!!! UNDER NO CIRCUMSTANCE ATTEMPT TO DELETE A TOPIC !!!!!!!!!!!!!!!!!!!!!!!!

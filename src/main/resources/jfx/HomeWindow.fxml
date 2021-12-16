@@ -6,115 +6,108 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.collections.FXCollections?>
+<?import java.net.URL?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="608.0" prefWidth="855.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.jfx.HomeWindowController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="608.0" prefWidth="840.0" styleClass="background" stylesheets="@jfx/PCBE.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.jfx.HomeWindowController">
    <children>
-      <AnchorPane layoutX="9.0" layoutY="76.0" prefHeight="480.0" prefWidth="176.0">
+      <AnchorPane layoutX="14.0" layoutY="77.0" prefHeight="480.0" prefWidth="176.0">
          <children>
-            <TextField fx:id="filterField" layoutX="7.0" layoutY="54.0" prefHeight="25.0" prefWidth="163.0" />
-            <Text layoutX="14.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search Stock" />
-            <TableView fx:id="tableview" layoutX="9.0" layoutY="93.0" prefHeight="387.0" prefWidth="159.0">
+            <TextField fx:id="filterField" layoutX="7.0" layoutY="54.0" prefHeight="25.0" prefWidth="163.0" styleClass="field" />
+            <Text layoutX="14.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Search Stock" />
+            <TableView fx:id="tableview" layoutX="9.0" layoutY="93.0" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="421.0" prefWidth="159.0" styleClass="table">
                <columns>
-                  <TableColumn fx:id="name" prefWidth="77.0" text="Name" />
-                  <TableColumn fx:id="price" prefWidth="81.0" text="Price" />
+                  <TableColumn fx:id="name" maxWidth="1000.0" prefWidth="78.0" text="Name" />
+                  <TableColumn fx:id="price" maxWidth="1000.0" prefWidth="78.0" text="Price" />
                </columns>
             </TableView>
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="185.0" layoutY="78.0" prefHeight="477.0" prefWidth="398.0" style="-fx-background-color: white; -fx-border-color: gray;">
+      <AnchorPane layoutX="211.0" layoutY="90.0" prefHeight="325.0" prefWidth="334.0" styleClass="box">
          <children>
-            <Text layoutX="133.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Stock Name" wrappingWidth="131.13671875">
+            <Text layoutX="101.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Stock Name" wrappingWidth="131.13671875">
                <font>
                   <Font size="24.0" />
                </font>
             </Text>
-            <Text fx:id="stockName" layoutX="128.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="140.13671875">
+            <Text fx:id="stockName" layoutX="108.0" layoutY="148.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="110.0">
                <font>
                   <Font size="20.0" />
                </font>
             </Text>
-            <Text layoutX="14.0" layoutY="175.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Company:" wrappingWidth="86.13671875">
+            <Text layoutX="14.0" layoutY="147.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Company:" wrappingWidth="86.13671875">
                <font>
                   <Font size="19.0" />
                </font>
             </Text>
-            <Text layoutX="11.0" layoutY="223.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Company Market Cap:" wrappingWidth="202.078125">
+            <Text layoutX="9.0" layoutY="183.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text=" Market Cap:" wrappingWidth="110.0">
                <font>
                   <Font size="19.0" />
                </font>
             </Text>
-            <Text layoutX="11.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Change 24H:">
+            <Text layoutX="12.0" layoutY="217.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Technicals:">
                <font>
                   <Font size="19.0" />
                </font>
             </Text>
-            <Text layoutX="11.0" layoutY="324.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Change 1 month:">
+            <Text fx:id="companyName" layoutX="96.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="140.13671875">
                <font>
                   <Font size="19.0" />
                </font>
             </Text>
-            <Text layoutX="11.0" layoutY="435.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Technicals:">
+            <Text fx:id="companyMC" layoutX="123.0" layoutY="184.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="110.0">
                <font>
                   <Font size="19.0" />
                </font>
             </Text>
-            <Text fx:id="companyName" layoutX="121.0" layoutY="175.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="140.13671875">
+            <Text fx:id="change24" layoutX="85.0" layoutY="298.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="67.529296875" AnchorPane.leftAnchor="84.529296875" AnchorPane.rightAnchor="180.470703125">
                <font>
                   <Font size="19.0" />
                </font>
             </Text>
-            <Text fx:id="companyMC" layoutX="213.0" layoutY="224.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="140.13671875">
+            <Text fx:id="recommended" layoutX="112.0" layoutY="218.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="110.0">
                <font>
                   <Font size="19.0" />
                </font>
             </Text>
-            <Text fx:id="change24" layoutX="129.0" layoutY="273.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="140.13671875">
-               <font>
-                  <Font size="19.0" />
-               </font>
-            </Text>
-            <Text fx:id="change1" layoutX="166.0" layoutY="324.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="140.13671875">
-               <font>
-                  <Font size="19.0" />
-               </font>
-            </Text>
-            <Text fx:id="recommended" layoutX="155.0" layoutY="435.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="140.13671875">
+            <Text fill="#0e6118" layoutX="14.0" layoutY="298.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Owned:" wrappingWidth="67.529296875">
                <font>
                   <Font size="19.0" />
                </font>
             </Text>
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="583.0" layoutY="80.0" prefHeight="473.0" prefWidth="111.0">
+      <AnchorPane layoutX="561.0" layoutY="103.0" prefHeight="473.0" prefWidth="131.0">
          <children>
-            <Text fx:id="currentPrice" layoutX="5.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="101.0">
+            <Text fx:id="currentPrice" layoutX="15.0" layoutY="248.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="101.0">
                <font>
                   <Font size="20.0" />
                </font>
             </Text>
-            <TableView fx:id="sellTable" layoutX="16.0" layoutY="14.0" prefHeight="200.0" prefWidth="79.0">
+            <TableView fx:id="sellTable" layoutX="11.0" prefHeight="229.0" prefWidth="110.0" styleClass="table">
                <columns>
-                  <TableColumn fx:id="sellOrders" prefWidth="78.0" text="Sell Orders" />
+                  <TableColumn fx:id="sellOrdersPrice" prefWidth="55.0" text="Price" />
+                  <TableColumn fx:id="sellOrdersAmount" prefWidth="55.0" text="Amount" />
                </columns>
             </TableView>
-            <TableView fx:id="buyTable" layoutX="16.0" layoutY="259.0" prefHeight="200.0" prefWidth="79.0">
+            <TableView fx:id="buyTable" layoutX="11.0" layoutY="259.0" prefHeight="229.0" prefWidth="110.0" styleClass="table">
                <columns>
-                  <TableColumn fx:id="buyOrders" prefWidth="78.0" text="Buy Orders" />
+                  <TableColumn fx:id="buyOrdersPrice" prefWidth="55.0" text="Price" />
+                  <TableColumn fx:id="buyOrdersAmount" prefWidth="55.0" text="Amount" />
                </columns>
             </TableView>
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="694.0" layoutY="90.0" prefHeight="474.0" prefWidth="110.0">
+      <AnchorPane layoutX="700.0" layoutY="90.0" prefHeight="474.0" prefWidth="110.0">
          <children>
-            <Text fx:id="priceLabel" layoutX="14.0" layoutY="158.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Price:" wrappingWidth="61.13671875">
+            <Text fx:id="priceLabel" layoutX="14.0" layoutY="158.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Price:" wrappingWidth="43.13671875">
                <font>
                   <Font size="15.0" />
                </font>
             </Text>
-            <TextField fx:id="setPrice" layoutX="3.0" layoutY="163.0" prefHeight="25.0" prefWidth="105.0" />
+            <TextField fx:id="setPrice" layoutX="3.0" layoutY="163.0" prefHeight="25.0" prefWidth="105.0" styleClass="field" />
             <Button fx:id="buyButton" layoutX="4.0" layoutY="237.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="103.0" text="Buy" />
             <Button fx:id="sellButton" layoutX="4.0" layoutY="302.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="103.0" text="Sell" />
-            <ComboBox fx:id="typeCombo" layoutX="5.0" layoutY="47.0" prefHeight="25.0" prefWidth="101.0" promptText="Select type">
+            <ComboBox fx:id="typeCombo" layoutX="5.0" layoutY="47.0" prefHeight="25.0" prefWidth="101.0" promptText="Select type" styleClass="field">
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:id="market" fx:value="Market" />
@@ -122,19 +115,40 @@
                   </FXCollections>
                </items>
             </ComboBox>
-            <Text layoutX="14.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Type:" wrappingWidth="43.13671875">
+            <Text layoutX="14.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Type:" wrappingWidth="43.13671875">
                <font>
                   <Font size="15.0" />
                </font>
             </Text>
-            <TextField fx:id="setAmount" layoutX="3.0" layoutY="111.0" prefHeight="25.0" prefWidth="105.0" />
-            <Text layoutX="14.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Amount" />
+            <TextField fx:id="setAmount" layoutX="3.0" layoutY="111.0" prefHeight="25.0" prefWidth="105.0" styleClass="field" />
+            <Text layoutX="9.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Amount:">
+               <font>
+                  <Font size="15.0" />
+               </font></Text>
+            <Text layoutX="14.0" layoutY="407.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Balance:" wrappingWidth="67.529296875">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Text>
+            <Text fx:id="userBalance" layoutX="12.0" layoutY="434.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="86.13671875">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Text>
          </children>
       </AnchorPane>
-      <Text layoutX="14.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Stock Exchange PCBE" wrappingWidth="227.13671875">
+      <Text layoutX="14.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Stock Exchange PCBE" wrappingWidth="227.13671875">
          <font>
             <Font size="20.0" />
          </font>
       </Text>
+      <TableView fx:id="myOrders" layoutX="211.0" layoutY="430.0" prefHeight="161.0" prefWidth="334.0" styleClass="table">
+        <columns>
+          <TableColumn fx:id="myName" prefWidth="83.5" text="Name" />
+          <TableColumn fx:id="myType" prefWidth="83.5" text="Type" />
+            <TableColumn fx:id="myPrice" prefWidth="83.5" text="Price" />
+            <TableColumn fx:id="myAmount" prefWidth="83.5" text="Amount" />
+        </columns>
+      </TableView>
    </children>
 </AnchorPane>

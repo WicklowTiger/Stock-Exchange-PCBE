@@ -30,7 +30,9 @@ public class ExchangeManager implements InvocationHandler {
     private static ServerProducer<String, String> serverProducer;
     private Thread connectionThread = null;
 
-    /**Initializes a mock database + starts serverProducer and connectionThread*/
+    /**
+     * Initializes a mock database + starts serverProducer and connectionThread
+     */
     private ExchangeManager() {
         initDatabase();
         serverProducer = new ServerProducer<String, String>(new StringSerializer(), new StringSerializer());
@@ -39,7 +41,7 @@ public class ExchangeManager implements InvocationHandler {
     }
 
     public static ExchangeManager getInstance() {
-        if(inst == null){
+        if (inst == null) {
             inst = new ExchangeManager();
         }
         return inst;
@@ -70,6 +72,13 @@ public class ExchangeManager implements InvocationHandler {
     }
 
     public void handleTrade(Trade trade) {
+        try {
+            this.checkTrade(trade);
+        } catch (Throwable e) {
+            sendReply(trade.userUid, e.toString());
+            e.printStackTrace();
+            return;
+        }
         switch (trade.tradeType) {
             case MARKET_SELL:
                 handleMarketSell(trade);
@@ -117,12 +126,15 @@ public class ExchangeManager implements InvocationHandler {
             return;
         }
         stockDatabase.get(trade.stockName).buyOrders.add(new Order(trade.userUid, trade.stockPrice, trade.stockAmount));
+        withdrawBalanceFromUser(trade.userUid, trade.stockAmount * trade.stockPrice);
     }
 
     private void handleMarketBuy(Trade trade) {
         Stock wantedStock = stockDatabase.get(trade.stockName);
         ArrayList<Order> sellOrders = wantedStock.sellOrders;
-        if(sellOrders.size() == 0) { return; }
+        if (sellOrders.size() == 0) {
+            return;
+        }
         if (trade.stockAmount >= sellOrders.get(0).amount) { // fully fills order
             trade.stockAmount -= sellOrders.get(0).amount;
             float stockToGive = sellOrders.get(0).amount;
@@ -130,7 +142,6 @@ public class ExchangeManager implements InvocationHandler {
             giveUserStock(trade.userUid, trade.stockName, stockToGive);
             withdrawBalanceFromUser(trade.userUid, balanceToTake);
             giveUserBalance(sellOrders.get(0).userUid, balanceToTake);
-            withdrawStockFromUser(sellOrders.get(0).userUid, trade.stockName, stockToGive);
             sendReply(trade.userUid, "Partially filled  " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + "$)");
             sendReply(sellOrders.get(0).userUid, "Filled  " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + trade.stockName + ")");
             sellOrders.remove(0);
@@ -142,7 +153,6 @@ public class ExchangeManager implements InvocationHandler {
             giveUserStock(trade.userUid, trade.stockName, stockToGive);
             withdrawBalanceFromUser(trade.userUid, balanceToTake);
             giveUserBalance(sellOrders.get(0).userUid, balanceToTake);
-            withdrawBalanceFromUser(sellOrders.get(0).userUid, stockToGive);
             sendReply(trade.userUid, "Filled  " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + "$)");
             sendReply(sellOrders.get(0).userUid, "Partially filled  " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + trade.stockName + ")");
             wantedStock.price = wantedStock.sellOrders.get(0).price;
@@ -155,18 +165,20 @@ public class ExchangeManager implements InvocationHandler {
             return;
         }
         stockDatabase.get(trade.stockName).sellOrders.add(new Order(trade.userUid, trade.stockPrice, trade.stockAmount));
+        withdrawStockFromUser(trade.userUid, trade.stockName, trade.stockAmount);
     }
 
     private void handleMarketSell(Trade trade) {
         Stock wantedStock = stockDatabase.get(trade.stockName);
         ArrayList<Order> buyOrders = wantedStock.buyOrders;
-        if(buyOrders.size() == 0) { return; }
+        if (buyOrders.size() == 0) {
+            return;
+        }
         if (trade.stockAmount >= buyOrders.get(0).amount) { // fully fills order
             trade.stockAmount -= buyOrders.get(0).amount;
             float stockToGive = buyOrders.get(0).amount;
             float balanceToTake = buyOrders.get(0).price * buyOrders.get(0).amount;
             giveUserStock(buyOrders.get(0).userUid, trade.stockName, stockToGive);
-            withdrawBalanceFromUser(buyOrders.get(0).userUid, balanceToTake);
             giveUserBalance(trade.userUid, balanceToTake);
             withdrawStockFromUser(trade.userUid, trade.stockName, stockToGive);
             sendReply(buyOrders.get(0).userUid, "Filled  " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + "$)");
@@ -178,7 +190,6 @@ public class ExchangeManager implements InvocationHandler {
             float stockToGive = trade.stockAmount;
             float balanceToTake = buyOrders.get(0).price * trade.stockAmount;
             giveUserStock(buyOrders.get(0).userUid, trade.stockName, stockToGive);
-            withdrawBalanceFromUser(buyOrders.get(0).userUid, balanceToTake);
             giveUserBalance(trade.userUid, balanceToTake);
             withdrawStockFromUser(trade.userUid, trade.stockName, stockToGive);
             sendReply(buyOrders.get(0).userUid, "Partially filled  " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + "$)");
@@ -193,24 +204,29 @@ public class ExchangeManager implements InvocationHandler {
             broadcastMessage.append(entry.getValue().name).append(',').append(entry.getValue().price).append(";");
         }
         broadcastMessage.deleteCharAt(broadcastMessage.toString().length() - 1);
-        broadcastMessage.append("|ORDERS|");
+        broadcastMessage.append("!ORDERS!");
         for (Map.Entry<String, Stock> entry : stockDatabase.entrySet()) {
-            if(entry.getValue().buyOrders.size() == 0 && entry.getValue().sellOrders.size() == 0) {continue;}
+            if (entry.getValue().buyOrders.size() == 0 && entry.getValue().sellOrders.size() == 0) {
+                continue;
+            }
             broadcastMessage.append(entry.getValue().name).append(',');
-            for(Order order : entry.getValue().buyOrders) {
+            for (Order order : entry.getValue().buyOrders) {
                 broadcastMessage.append('B').append(order.toString()).append(',');
             }
-            for(Order order : entry.getValue().sellOrders) {
+            for (Order order : entry.getValue().sellOrders) {
                 broadcastMessage.append('S').append(order.toString()).append(',');
             }
+            broadcastMessage.deleteCharAt(broadcastMessage.toString().length() - 1);
+            broadcastMessage.append(';');
         }
         serverProducer.sendMessage("stockUpdates", broadcastMessage.toString(), new MessageOptions<>());
     }
 
     private void ageConnections() {
-        while(true) {
+        while (true) {
             for (Map.Entry<String, Integer> entry : connectedUsers.entrySet()) {
-                System.out.println("User " + entry.getKey() + " is online and will be disconnected in " + (30 - entry.getValue()) + " seconds.");
+                System.out.println("User " + entry.getKey() + " is online and will be disconnected in " +
+                        (Const.keepAliveThreshold - entry.getValue()) + " seconds.");
                 Integer new_value = entry.getValue() + 1;
                 if (new_value >= Const.keepAliveThreshold) {
                     connectedUsers.remove(entry.getKey());
@@ -236,10 +252,11 @@ public class ExchangeManager implements InvocationHandler {
         stockDatabase.put("AAPL", new Stock("AAPL", 40f, "Apple", "5000"));
         stockDatabase.put("JNJ", new Stock("JNJ", 50f, "Johnson and Johnson", "6000"));
         stockDatabase.put("JPM", new Stock("JPM", 60f, "JPMorgan", "7000"));
-        stockDatabase.get("MSFT").sellOrders.add(new Order(35f, 0.5f));
-        stockDatabase.get("MSFT").sellOrders.add(new Order(36f, 2.03f));
-        stockDatabase.get("AAPL").sellOrders.add(new Order(41f, 3f));
-        stockDatabase.get("AAPL").buyOrders.add(new Order(39f, 2.5f));
+        stockDatabase.get("MSFT").sellOrders.add(new Order(Const.defaultUser2.uid, 35f, 0.5f));
+        stockDatabase.get("MSFT").sellOrders.add(new Order(Const.defaultUser2.uid, 36f, 2.03f));
+        stockDatabase.get("AAPL").sellOrders.add(new Order(Const.defaultUser2.uid, 41f, 3f));
+        stockDatabase.get("AAPL").sellOrders.add(new Order(Const.defaultUser2.uid, 42f, 2.5f));
+        stockDatabase.get("AAPL").buyOrders.add(new Order(Const.defaultUser2.uid, 39f, 2.5f));
     }
 
     private void checkTrade(Trade trade) throws Throwable {
@@ -276,7 +293,8 @@ public class ExchangeManager implements InvocationHandler {
                 case "handleLimitSell":
                     this.checkTrade((Trade) args[0]);
                     break;
-                default: break;
+                default:
+                    break;
             }
             result = method.invoke(this, args);
         } catch (InvocationTargetException e) {

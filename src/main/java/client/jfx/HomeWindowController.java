@@ -2,16 +2,19 @@ package client.jfx;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import client.ClientActionsManager;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -41,9 +44,13 @@ public class HomeWindowController implements Initializable {
     @FXML
     private TableColumn<Stock, String> price;
     @FXML
-    private TableColumn<Order, String> sellOrders;
+    private TableColumn<Order, String> sellOrdersPrice;
     @FXML
-    private TableColumn<Order, String> buyOrders;
+    private TableColumn<Order, String> sellOrdersAmount;
+    @FXML
+    private TableColumn<Order, String> buyOrdersPrice;
+    @FXML
+    private TableColumn<Order, String> buyOrdersAmount;
     @FXML
     private Text stockName;
     @FXML
@@ -60,10 +67,25 @@ public class HomeWindowController implements Initializable {
     private ComboBox typeCombo;
     @FXML
     private Text priceLabel;
+    @FXML
+    private TableView<Order> myOrders;
+    @FXML
+    private TableColumn<Order,String> myName;
+    @FXML
+    private TableColumn<Order,String> myType;
+    @FXML
+    private TableColumn<Order,String> myPrice;
+    @FXML
+    private TableColumn<Order,String> myAmount;
+    @FXML
+    private Text userBalance;
+    @FXML
+    private Text stockBalance;
 
     private static final ObservableList<Stock> dataList = FXCollections.observableArrayList();
-    private ObservableList<Order> buyList = FXCollections.observableArrayList();
-    private ObservableList<Order> sellList = FXCollections.observableArrayList();
+    private static ObservableList<Order> buyList = FXCollections.observableArrayList();
+    private static ObservableList<Order> sellList = FXCollections.observableArrayList();
+    private static ObservableList<Order> myOrderList = FXCollections.observableArrayList();
 
     enum Technical {
         NEUTRAL,
@@ -81,8 +103,10 @@ public class HomeWindowController implements Initializable {
         typeCombo.getSelectionModel().select(1);
         name.setCellValueFactory(new PropertyValueFactory<>("name"));
         price.setCellValueFactory(new PropertyValueFactory<>("price"));
-        sellOrders.setCellValueFactory(new PropertyValueFactory<>("price"));
-        buyOrders.setCellValueFactory(new PropertyValueFactory<>("price"));
+        sellOrdersPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        buyOrdersPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        sellOrdersAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        buyOrdersAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
         FilteredList<Stock> filteredData = new FilteredList<>(dataList);
 
@@ -147,6 +171,7 @@ public class HomeWindowController implements Initializable {
             recommended.setText(Technical.getRandomTechnical());
             companyName.setText(stock.getCompanyName());
             companyMC.setText(stock.getMarketCap());
+
         }
     }
 
@@ -155,7 +180,7 @@ public class HomeWindowController implements Initializable {
         if (tableview.getSelectionModel().getSelectedItem() != null) {
             Stock stock = tableview.getSelectionModel().getSelectedItem();
             if (orderType.toString().toLowerCase().equals("limit")) {
-                if (price > Integer.parseInt(stock.getPrice())) {
+                if (price > stock.price) {
                     Alert sell_alert = new Alert(Alert.AlertType.INFORMATION, "Price needs to be lower than stock price for sell order");
                     sell_alert.show();
                 } else {
@@ -180,7 +205,7 @@ public class HomeWindowController implements Initializable {
         if (tableview.getSelectionModel().getSelectedItem() != null) {
             Stock stock = tableview.getSelectionModel().getSelectedItem();
             if (orderType.toString().toLowerCase().equals("limit")) {
-                if (price < Integer.parseInt(stock.getPrice())) {
+                if (price < stock.price) {
                     Alert sell_alert = new Alert(Alert.AlertType.INFORMATION, "Price needs to be higher than stock price for sell order");
                     sell_alert.show();
                 } else {
@@ -188,7 +213,7 @@ public class HomeWindowController implements Initializable {
 
                 }
             } else {
-                System.out.println(orderType + " SELL " + stock.getName() + " " + amount + "@" + stock.getPrice());
+                ClientActionsManager.putAction(new Action(ActionType.SEND_SELL, stock.getName() + "," + amount));
             }
 
         } else {
@@ -251,11 +276,28 @@ public class HomeWindowController implements Initializable {
     }
 
     public static void updateStocks(String message) {
+        //get the item that was selected before
+        String[] tempArr = message.split("!ORDERS!");
+
+        int selectedPosition = -1;
+        Stock selectedStock = inst.tableview.getSelectionModel().getSelectedItem();
+
+        if(selectedStock!=null){
+            if(dataList.size()!=0){
+                for(int i=0;i<dataList.size();i++){
+                    if(dataList.get(i).getName().equals(selectedStock.getName())){
+                        selectedPosition = i;
+                        break;
+                    }
+                }
+            }
+        }
+
         //check if stock exists; if yes, update existing stocks; if not, add it at the end of the datalist
         ObservableList<Stock> auxDataList = FXCollections.observableArrayList();
         auxDataList.addAll(dataList);
 
-        ArrayList<Stock> incomingStocksList = decodeUpdateMessage(message);
+        ArrayList<Stock> incomingStocksList = decodeUpdateMessage(tempArr[0]);
         incomingStocksList.forEach(incomingStock -> {
             AtomicBoolean stockFound = new AtomicBoolean(false);
             auxDataList.forEach(existingStock -> {
@@ -271,10 +313,17 @@ public class HomeWindowController implements Initializable {
         });
         dataList.clear();
         dataList.addAll(auxDataList);
+        if(selectedPosition > -1) {
+            inst.tableview.getSelectionModel().select(selectedPosition);
+            inst.tableview.getFocusModel().focus(selectedPosition);
+        }
+        updateOrders(tempArr[1]);
     }
 
     public static void openDialogBox(String message) {
-        System.out.println(message);
+        Platform.runLater(() -> {
+            new Alert(Alert.AlertType.INFORMATION, message).show();
+        });
     }
 
     public static HomeWindowController getInstance() {
@@ -304,4 +353,59 @@ public class HomeWindowController implements Initializable {
         }
         return true;
     }
+
+    public static void decodeOrders(String message){
+        //AAPL,B31-0.39,B32-12,B33-70;MSFT,S80-0.5,400-0.7
+        dataList.forEach(stock->{
+            stock.sellOrders.clear();
+            stock.buyOrders.clear();
+        });
+
+        String[] ordersList = message.split(";");
+        for(int i=0;i<ordersList.length;i++){
+            String[] stockData = ordersList[i].split(",");
+            String stockName = stockData[0];
+            if(stockData.length>1){
+                for(int j=1;j<stockData.length;j++){
+                    char orderType = stockData[j].charAt(0);
+                    stockData[j] = stockData[j].replace("B","");
+                    stockData[j] = stockData[j].replace("S","");
+                    float price = Float.parseFloat(stockData[j].split("-")[0]);
+                    float amount = Float.parseFloat(stockData[j].split("-")[1]);
+                    if(orderType=='B'){
+                        dataList.forEach(stock->{
+                            if(stock.name.equals(stockName)){
+                                stock.buyOrders.add(new Order(price, amount));
+                            }
+                        });
+                    }
+                    else{
+                        dataList.forEach(stock->{
+                            if(stock.name.equals(stockName)){
+                                stock.sellOrders.add(new Order(price, amount));
+                            }
+                        });
+                    }
+                }
+            }
+
+
+        }
+
+    }
+    public static void updateOrders(String message){
+        decodeOrders(message);
+        if(inst.tableview.getSelectionModel().getSelectedItem()==null)
+            return;
+        sellList.clear();
+        buyList.clear();
+        dataList.forEach(stock->{
+            if(stock.getName().equals(inst.tableview.getSelectionModel().getSelectedItem().getName())){
+                sellList.addAll(stock.sellOrders);
+                buyList.addAll(stock.buyOrders);
+            }
+        });
+    }
+
+
 }
