@@ -1,5 +1,7 @@
 package server;
 
+import client.ClientActionsManager;
+import client.ClientConsumer;
 import org.apache.kafka.common.serialization.Deserializer;
 import shared.Const;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -8,6 +10,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import shared.Message;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -21,9 +24,6 @@ import java.util.Properties;
 public class ServerConsumer<K, V> {
     private final Logger logger = LoggerFactory.getLogger(client.ClientProducer.class);
     private final KafkaConsumer<K, V> consumer;
-    private Thread tradingThread;
-    /**Implement this as a class with a timeout field*/
-    private Thread keepAliveThread;
     private final ArrayList<String> topicsToReadFrom = new ArrayList<String>();
 
     public <T extends Deserializer<K>, U extends Deserializer<V>> ServerConsumer(T keyDeserializer, U valueDeserializer, ArrayList<String> topics) {
@@ -39,30 +39,31 @@ public class ServerConsumer<K, V> {
         this.topicsToReadFrom.addAll(topics);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.info("stopping application...");
+            logger.info("stopping server consumer...");
         }));
     }
 
-    /**TODO*/
     public void startListening() {
-        this.consumer.subscribe(topicsToReadFrom);
-        this.tradingThread = new Thread() {
-            @Override
-            public void run() {
-                while(true) {
-                    ConsumerRecords<K, V> records = ServerConsumer.this.consumer.poll(Duration.ofMillis(100));
-                    for(ConsumerRecord<K, V> record: records) {
-                        logger.info("\nKey: " + record.key() + ", Value: " + record.value());
-                        logger.info("\nOffset: " + record.offset() + ", Partition: " + record.partition());
-                    }
-                }
+        this.consumer.subscribe(this.topicsToReadFrom);
+        while (true) {
+            ConsumerRecords<K, V> records = ServerConsumer.this.consumer.poll(Duration.ofMillis(100));
+            for (ConsumerRecord<K, V> record : records) {
+                String key = "";
+                if(record.key() != null) { key = record.key().toString(); }
+                ServerActionsManager.putAction(
+                        new Message<String, String>(
+                                key,
+                                record.value().toString(),
+                                record.topic()
+                        )
+                );
             }
-        };
-        this.tradingThread.start();
+        }
     }
 
-    /**TODO*/
-    public void stopListening() {
-        this.tradingThread.interrupt();
+    public void stop() {
+        if (this.consumer != null) {
+            this.consumer.close();
+        }
     }
 }
