@@ -11,11 +11,21 @@ public class Order {
         this.amount = amount;
     }
 
+    public Order(float price, float amount){
+        this.price = price;
+        this.amount = amount;
+    }
+
     public String getPrice() {
         return price.toString();
     }
 
     public String getAmount() {
         return amount.toString();
+    }
+
+    @Override
+    public String toString() {
+        return price.toString() + '-' + amount.toString();
     }
 }
