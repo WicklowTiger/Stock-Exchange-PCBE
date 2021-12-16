@@ -44,9 +44,13 @@ public class HomeWindowController implements Initializable {
     @FXML
     private TableColumn<Stock, String> price;
     @FXML
-    private TableColumn<Order, String> sellOrders;
+    private TableColumn<Order, String> sellOrdersPrice;
     @FXML
-    private TableColumn<Order, String> buyOrders;
+    private TableColumn<Order, String> sellOrdersAmount;
+    @FXML
+    private TableColumn<Order, String> buyOrdersPrice;
+    @FXML
+    private TableColumn<Order, String> buyOrdersAmount;
     @FXML
     private Text stockName;
     @FXML
@@ -63,10 +67,25 @@ public class HomeWindowController implements Initializable {
     private ComboBox typeCombo;
     @FXML
     private Text priceLabel;
+    @FXML
+    private TableView<Order> myOrders;
+    @FXML
+    private TableColumn<Order,String> myName;
+    @FXML
+    private TableColumn<Order,String> myType;
+    @FXML
+    private TableColumn<Order,String> myPrice;
+    @FXML
+    private TableColumn<Order,String> myAmount;
+    @FXML
+    private Text userBalance;
+    @FXML
+    private Text stockBalance;
 
     private static final ObservableList<Stock> dataList = FXCollections.observableArrayList();
     private static ObservableList<Order> buyList = FXCollections.observableArrayList();
     private static ObservableList<Order> sellList = FXCollections.observableArrayList();
+    private static ObservableList<Order> myOrderList = FXCollections.observableArrayList();
 
     enum Technical {
         NEUTRAL,
@@ -84,8 +103,10 @@ public class HomeWindowController implements Initializable {
         typeCombo.getSelectionModel().select(1);
         name.setCellValueFactory(new PropertyValueFactory<>("name"));
         price.setCellValueFactory(new PropertyValueFactory<>("price"));
-        sellOrders.setCellValueFactory(new PropertyValueFactory<>("price"));
-        buyOrders.setCellValueFactory(new PropertyValueFactory<>("price"));
+        sellOrdersPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        buyOrdersPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        sellOrdersAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        buyOrdersAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
         FilteredList<Stock> filteredData = new FilteredList<>(dataList);
 
@@ -150,6 +171,7 @@ public class HomeWindowController implements Initializable {
             recommended.setText(Technical.getRandomTechnical());
             companyName.setText(stock.getCompanyName());
             companyMC.setText(stock.getMarketCap());
+
         }
     }
 
