@@ -1,12 +1,9 @@
 package client;
 
-import client.jfx.App;
 import client.jfx.HomeWindowController;
-import javafx.application.Application;
-import shared.Action;
-import shared.ActionType;
-import shared.Const;
-import shared.Message;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import shared.*;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,16 +11,25 @@ import java.util.concurrent.TimeUnit;
 
 public class ClientActionsManager {
     private static final ConcurrentHashMap<Integer, Action> actionQueue= new ConcurrentHashMap<>();
+    private static ClientProducer<String, String> heartbeatProducer;
     private static ClientActionsManager inst = null;
+    private final ClientConsumer<String, String> consumer;
     private final TradeManager tradeManager;
-    /**This is not trade-safe, need actionQueue mechanism or new thread?*/
-    private final HomeWindowController homeWindowController;
+    private Thread consumerThread = null;
     private Thread pollingThread = null;
+    private Thread hearbeatThread = null;
 
+    /**Initializes trade manager and waits for homeWindowController before issuing any action*/
     private ClientActionsManager() {
+        heartbeatProducer = new ClientProducer<String, String>(new StringSerializer(), new StringSerializer(), "keepAlive");
+        this.hearbeatThread = new Thread(this::keepAlive);
+        this.hearbeatThread.start();
+        consumer = new ClientConsumer<String, String>(new StringDeserializer(), new StringDeserializer(), Const.clientListenTopics);
         tradeManager = TradeManager.getInstance();
         tradeManager.setUser(Const.defaultUser);
-        homeWindowController = HomeWindowController.getInstance();
+        HomeWindowController homeWindowController = HomeWindowController.getInstance();
+        this.consumerThread = new Thread(consumer::startListening);
+        this.consumerThread.start();
     }
 
     public static ClientActionsManager getInstance() {
@@ -39,6 +45,8 @@ public class ClientActionsManager {
                 return new Action(ActionType.ACK_REPLY, message.toString());
             case STOCK_UPDATES:
                 return new Action(ActionType.UPDATE_STOCKS, message.toString());
+            case USER_UPDATES:
+                return new Action(ActionType.UPDATE_USER, message.toStringWithKey());
             default:
                 return new Action(ActionType.ACK_REPLY, "An error occured, please restart the app.");
         }
@@ -62,10 +70,13 @@ public class ClientActionsManager {
                     Map.Entry<Integer, Action> entry = actionQueue.entrySet().iterator().next();
                     switch (entry.getValue().actionType) {
                         case UPDATE_STOCKS:
-                            System.out.println("Update stocks");
+                            HomeWindowController.updateStocks(entry.getValue().payload);
+                            break;
+                        case UPDATE_USER:
+                            tradeManager.updateUser(entry.getValue().payload);
                             break;
                         case ACK_REPLY:
-                            System.out.println("Ack reply");
+                            HomeWindowController.openDialogBox(entry.getValue().payload);
                             break;
                         case SEND_BUY:
                             tradeManager.handleBuyAction(entry.getValue().payload);
@@ -86,5 +97,26 @@ public class ClientActionsManager {
             }
         });
         this.pollingThread.start();
+    }
+
+    public void stop() {
+        this.consumerThread.interrupt();
+        this.pollingThread.interrupt();
+        this.hearbeatThread.interrupt();
+        heartbeatProducer.stop();
+        consumer.stop();
+    }
+
+    private void keepAlive() {
+        while(true) {
+            if(tradeManager != null && tradeManager.getUser() != null) {
+                heartbeatProducer.sendMessage(tradeManager.getUser().uid, new MessageOptions<>());
+            }
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -47,8 +47,18 @@ class TradeManager implements InvocationHandler {
         }
     }
 
+    public void updateUser(String message) {
+        String[] tmpArray = message.split(",", 2);
+        setUser(User.fromString(tmpArray[0], tmpArray[1]));
+    }
+
     public void setUser(User user) {
+        System.out.println("setting user to " + user.toString());
         this.user = user;
+    }
+
+    public User getUser() {
+        return this.user;
     }
 
     public void sendBuy(TradeMessage tradeMessage) {

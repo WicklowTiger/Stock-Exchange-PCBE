@@ -32,8 +32,14 @@ public class ServerProducer<K, V> {
     }
 
     public void sendMessage(String topic, V value, MessageOptions<K> opts) {
-        producer.send(new ProducerRecord<K, V>(topic, value));
-        producer.flush();
+        new Thread(() -> {
+            if (opts.key != null) {
+                producer.send(new ProducerRecord<K, V>(topic, opts.key, value));
+            } else {
+                producer.send(new ProducerRecord<K, V>(topic, value));
+            }
+            producer.flush();
+        }).start();
     }
 
     public void stop() {

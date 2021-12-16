@@ -9,24 +9,15 @@ public class Message<K, V> {
     public Message(K key, V value, String topic) {
         this.key = key;
         this.value = value;
-        switch(topic) {
-            case "stockUpdates":
-                this.topic = Topic.STOCK_UPDATES;
-                break;
-            case "tradeReplies":
-                this.topic = Topic.TRADE_REPLIES;
-                break;
-            default:
-                break;
-        }
+        this.topic = Topic.fromString(topic);
     }
 
     @Override
     public String toString() {
-        return "Message{" +
-                "key=" + key +
-                ", value=" + value +
-                ", topic=" + topic +
-                '}';
+        return value.toString();
+    }
+
+    public String toStringWithKey() {
+        return key.toString() + "," + value.toString();
     }
 }

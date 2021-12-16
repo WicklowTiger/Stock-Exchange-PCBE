@@ -1,24 +1,24 @@
 package shared;
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import java.util.ArrayList;
 
-public class Stock {
+public class Stock implements StockModel{
+    public String name;
+    public Float price;
+    public String companyName;
+    public String marketCap;
 
-    private  String name;
-    private  String price;
-    private String companyName;
-    private String marketcap;
+    public final ArrayList<Order> sellOrders = new ArrayList<>();
+    public final ArrayList<Order> buyOrders = new ArrayList<>();
 
-
-    public Stock(String name, String price, String companyName, String marketcap) {
+    public Stock(String name, Float price, String companyName, String marketCap) {
         this.name = name;
         this.price = price;
         this.companyName = companyName;
-        this.marketcap = marketcap;
+        this.marketCap = marketCap;
     }
 
-    public Stock(String name, String price) {
+    public Stock(String name, Float price) {
         this.name = name;
         this.price = price;
     }
@@ -28,18 +28,18 @@ public class Stock {
     }
 
     public String getPrice() {
-        return this.price;
+        return this.price.toString();
     }
 
-    public String getMarketcap() {
-        return marketcap;
+    public String getMarketCap() {
+        return marketCap;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Float price) {
         this.price = price;
     }
     public String getCompanyName() {
@@ -49,8 +49,8 @@ public class Stock {
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
     }
-    public void setMarketcap(String marketcap) {
-        this.marketcap = marketcap;
+    public void setMarketCap(String marketCap) {
+        this.marketCap = marketCap;
     }
 
 }

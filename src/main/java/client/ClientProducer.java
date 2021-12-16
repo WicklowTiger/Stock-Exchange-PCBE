@@ -31,13 +31,16 @@ public class ClientProducer<K, V> {
         this.topic = topic;
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.info("stopping application...");
+            logger.info("stopping client producer for topic " + topic + "...");
         }));
     }
 
     public void sendMessage(V value, MessageOptions<K> opts) {
-        producer.send(new ProducerRecord<K, V>(topic, value));
-        producer.flush();
+        new Thread(() -> {
+            System.out.println("Sending message : " + value + " on topic " + topic);
+            producer.send(new ProducerRecord<K, V>(topic, value));
+            producer.flush();
+        }).start();
     }
 
     public void stop() {

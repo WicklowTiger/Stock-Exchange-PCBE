@@ -1,25 +1,21 @@
 package shared;
 
 public class Order {
-    private String price;
-    private String amount;
+    public String userUid;
+    public Float price;
+    public Float amount;
 
-    public Order(String price, String amount){
+    public Order(String userUid, float price, float amount){
+        this.userUid = userUid;
         this.price = price;
         this.amount = amount;
     }
+
     public String getPrice() {
-        return price;
-    }
-    public void setPrice(String price) {
-        this.price = price;
+        return price.toString();
     }
 
     public String getAmount() {
-        return amount;
-    }
-
-    public void setAmount(String amount) {
-        this.amount = amount;
+        return amount.toString();
     }
 }
