@@ -10,7 +10,6 @@ import shared.MessageOptions;
 import java.util.Properties;
 
 
-
 /**
  * Sends trade replies and stock updates after each trade
  */

@@ -67,13 +67,13 @@ public class HomeWindowController implements Initializable {
     @FXML
     private TableView<FxOrder> myOrders;
     @FXML
-    private TableColumn<FxOrder,String> myName;
+    private TableColumn<FxOrder, String> myName;
     @FXML
-    private TableColumn<FxOrder,String> myType;
+    private TableColumn<FxOrder, String> myType;
     @FXML
-    private TableColumn<FxOrder,String> myPrice;
+    private TableColumn<FxOrder, String> myPrice;
     @FXML
-    private TableColumn<FxOrder,String> myAmount;
+    private TableColumn<FxOrder, String> myAmount;
     @FXML
     private Text userBalance;
     @FXML
@@ -85,7 +85,7 @@ public class HomeWindowController implements Initializable {
     private static ObservableList<Order> buyList = FXCollections.observableArrayList();
     private static ObservableList<Order> sellList = FXCollections.observableArrayList();
     private static ObservableList<FxOrder> myOrderList = FXCollections.observableArrayList();
-    private static Map<String,Float> fxStockBalance = new HashMap<>();
+    private static Map<String, Float> fxStockBalance = new HashMap<>();
 
     enum Technical {
         NEUTRAL,
@@ -141,7 +141,7 @@ public class HomeWindowController implements Initializable {
 
         tableview.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
-                if(inst.tableview.getSelectionModel().getSelectedItem()!=null){
+                if (inst.tableview.getSelectionModel().getSelectedItem() != null) {
                     this.selectStock();
                 }
 
@@ -276,7 +276,9 @@ public class HomeWindowController implements Initializable {
         String[] message_list = message.split(";");
         for (int i = 0; i < message_list.length; i++) {
             String[] stock_params = message_list[i].split(",");
-            if(stock_params.length != 2) { break; }
+            if (stock_params.length != 2) {
+                break;
+            }
             stockList.add(new Stock(stock_params[0], Float.parseFloat(stock_params[1])));
         }
         return stockList;
@@ -289,10 +291,10 @@ public class HomeWindowController implements Initializable {
         int selectedPosition = -1;
         Stock selectedStock = inst.tableview.getSelectionModel().getSelectedItem();
 
-        if(selectedStock!=null){
-            if(dataList.size()!=0){
-                for(int i=0;i<dataList.size();i++){
-                    if(dataList.get(i).getName().equals(selectedStock.getName())){
+        if (selectedStock != null) {
+            if (dataList.size() != 0) {
+                for (int i = 0; i < dataList.size(); i++) {
+                    if (dataList.get(i).getName().equals(selectedStock.getName())) {
                         selectedPosition = i;
                         break;
                     }
@@ -320,7 +322,7 @@ public class HomeWindowController implements Initializable {
         });
         dataList.clear();
         dataList.addAll(auxDataList);
-        if(selectedPosition > -1) {
+        if (selectedPosition > -1) {
             inst.tableview.getSelectionModel().select(selectedPosition);
             inst.tableview.getFocusModel().focus(selectedPosition);
         }
@@ -362,52 +364,53 @@ public class HomeWindowController implements Initializable {
     }
 
     private void selectStock() {
-        if (tableview.getSelectionModel().getSelectedItem() == null) { return; }
+        if (tableview.getSelectionModel().getSelectedItem() == null) {
+            return;
+        }
         this.showDetailedStockData();
         sellList.clear();
         buyList.clear();
-        dataList.forEach(stock->{
-            if(stock.getName().equals(inst.tableview.getSelectionModel().getSelectedItem().getName())){
+        dataList.forEach(stock -> {
+            if (stock.getName().equals(inst.tableview.getSelectionModel().getSelectedItem().getName())) {
                 sellList.addAll(stock.sellOrders);
                 buyList.addAll(stock.buyOrders);
             }
         });
         //Update stock balance
         String selectedStockName = inst.tableview.getSelectionModel().getSelectedItem().getName();
-        if(fxStockBalance.containsKey(selectedStockName)){
+        if (fxStockBalance.containsKey(selectedStockName)) {
             inst.stockBalance.setText(fxStockBalance.get(selectedStockName).toString());
         }
     }
 
-    public static void decodeOrders(String message){
+    public static void decodeOrders(String message) {
         //AAPL,B31-0.39,B32-12,B33-70;MSFT,S80-0.5,400-0.7
-        dataList.forEach(stock->{
+        dataList.forEach(stock -> {
             stock.sellOrders.clear();
             stock.buyOrders.clear();
         });
 
         String[] ordersList = message.split(";");
-        for(int i=0;i<ordersList.length;i++){
+        for (int i = 0; i < ordersList.length; i++) {
             String[] stockData = ordersList[i].split(",");
             String stockName = stockData[0];
-            if(stockData.length>1){
-                for(int j=1;j<stockData.length;j++){
+            if (stockData.length > 1) {
+                for (int j = 1; j < stockData.length; j++) {
                     char orderType = stockData[j].charAt(0);
-                    stockData[j] = stockData[j].replace("B","");
-                    stockData[j] = stockData[j].replace("S","");
+                    stockData[j] = stockData[j].replace("B", "");
+                    stockData[j] = stockData[j].replace("S", "");
                     float price = Float.parseFloat(stockData[j].split("-")[0]);
                     float amount = Float.parseFloat(stockData[j].split("-")[1]);
-                    if(orderType=='B'){
-                        dataList.forEach(stock->{
-                            if(stock.name.equals(stockName)){
-                                stock.buyOrders.add(new Order(price, amount,stockName));
+                    if (orderType == 'B') {
+                        dataList.forEach(stock -> {
+                            if (stock.name.equals(stockName)) {
+                                stock.buyOrders.add(new Order(price, amount, stockName));
                             }
                         });
-                    }
-                    else{
-                        dataList.forEach(stock->{
-                            if(stock.name.equals(stockName)){
-                                stock.sellOrders.add(new Order(price, amount,stockName));
+                    } else {
+                        dataList.forEach(stock -> {
+                            if (stock.name.equals(stockName)) {
+                                stock.sellOrders.add(new Order(price, amount, stockName));
                             }
                         });
                     }
@@ -418,20 +421,23 @@ public class HomeWindowController implements Initializable {
         }
 
     }
-    public static void updateOrders(String message){
+
+    public static void updateOrders(String message) {
         decodeOrders(message);
-        if(inst.tableview.getSelectionModel().getSelectedItem()==null) { return; }
+        if (inst.tableview.getSelectionModel().getSelectedItem() == null) {
+            return;
+        }
         sellList.clear();
         buyList.clear();
-        dataList.forEach(stock->{
-            if(stock.getName().equals(inst.tableview.getSelectionModel().getSelectedItem().getName())){
+        dataList.forEach(stock -> {
+            if (stock.getName().equals(inst.tableview.getSelectionModel().getSelectedItem().getName())) {
                 sellList.addAll(stock.sellOrders);
                 buyList.addAll(stock.buyOrders);
             }
         });
     }
 
-    public static void updateUser(User user){
+    public static void updateUser(User user) {
         Platform.runLater(() -> {
             //Update user balance
             inst.userBalance.setText(user.balance.toString());
@@ -439,15 +445,17 @@ public class HomeWindowController implements Initializable {
             fxStockBalance.putAll(user.stockBalance);
             //Update user's order list
             myOrderList.clear();
-            user.buyOrders.forEach(buyOrder->{
-                myOrderList.add(new FxOrder(buyOrder,buyOrder.stockName,"BUY"));
+            user.buyOrders.forEach(buyOrder -> {
+                myOrderList.add(new FxOrder(buyOrder, buyOrder.stockName, "BUY"));
             });
-            user.sellOrders.forEach(sellOrder->{
-                myOrderList.add(new FxOrder(sellOrder,sellOrder.stockName,"SELL"));
+            user.sellOrders.forEach(sellOrder -> {
+                myOrderList.add(new FxOrder(sellOrder, sellOrder.stockName, "SELL"));
             });
-            if(inst.tableview.getSelectionModel().getSelectedItem() == null) { return; }
+            if (inst.tableview.getSelectionModel().getSelectedItem() == null) {
+                return;
+            }
             Stock selectedStock = inst.tableview.getSelectionModel().getSelectedItem();
-            if(fxStockBalance.containsKey(selectedStock.name)){
+            if (fxStockBalance.containsKey(selectedStock.name)) {
                 inst.stockBalance.setText(fxStockBalance.get(selectedStock.name).toString());
             }
             inst.currentPrice.setText(selectedStock.getPrice());

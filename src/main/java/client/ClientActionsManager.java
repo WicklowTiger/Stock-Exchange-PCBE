@@ -22,7 +22,9 @@ public class ClientActionsManager {
     private Thread pollingThread = null;
     private Thread heartbeatThread = null;
 
-    /**Initializes trade manager and waits for homeWindowController before issuing any action*/
+    /**
+     * Initializes trade manager and waits for homeWindowController before issuing any action
+     */
     private ClientActionsManager(String userUid) {
         // Initialize heartbeat and kafka objects
         heartbeatProducer = new ClientProducer<>(new StringSerializer(), new StringSerializer(), "keepAlive");
@@ -39,7 +41,7 @@ public class ClientActionsManager {
     }
 
     public static ClientActionsManager getInstance(String userUid) {
-        if(inst == null) {
+        if (inst == null) {
             inst = new ClientActionsManager(userUid);
         }
         return inst;
@@ -47,6 +49,7 @@ public class ClientActionsManager {
 
     /**
      * Converts kafka messages received from consumer into Actions
+     *
      * @param message kafka record wrapper
      * @return {@link Action}
      */
@@ -76,11 +79,11 @@ public class ClientActionsManager {
      * who is responsible for handling each action
      */
     public void run() {
-        if(this.pollingThread != null) {
+        if (this.pollingThread != null) {
             this.pollingThread.interrupt();
         }
         this.pollingThread = new Thread(() -> {
-            while(true) {
+            while (true) {
                 if (!actionQueue.isEmpty()) {
                     Map.Entry<Integer, Action> entry = actionQueue.entrySet().iterator().next();
                     switch (entry.getValue().actionType) {
@@ -88,13 +91,13 @@ public class ClientActionsManager {
                             HomeWindowController.updateStocks(entry.getValue().payload);
                             break;
                         case UPDATE_USER:
-                            if(tradeManager.getUser().uid.equals(entry.getValue().payload.split(",")[0])) {
+                            if (tradeManager.getUser().uid.equals(entry.getValue().payload.split(",")[0])) {
                                 tradeManager.updateUser(entry.getValue().payload);
                                 HomeWindowController.updateUser(tradeManager.getUser());
                             }
                             break;
                         case ACK_REPLY:
-                            if(tradeManager.getUser().uid.equals(entry.getValue().payload.split(",")[0])) {
+                            if (tradeManager.getUser().uid.equals(entry.getValue().payload.split(",")[0])) {
                                 HomeWindowController.openDialogBox(entry.getValue().payload);
                             }
                             break;
@@ -132,8 +135,8 @@ public class ClientActionsManager {
      * This will keep the user connected making him receive updates
      */
     private void heartbeat() {
-        while(true) {
-            if(tradeManager != null && tradeManager.getUser() != null) {
+        while (true) {
+            if (tradeManager != null && tradeManager.getUser() != null) {
                 heartbeatProducer.sendMessage(tradeManager.getUser().uid, new MessageOptions<>());
             }
             try {

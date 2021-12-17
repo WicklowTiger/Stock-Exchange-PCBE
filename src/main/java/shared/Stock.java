@@ -2,7 +2,7 @@ package shared;
 
 import java.util.ArrayList;
 
-public class Stock implements StockModel{
+public class Stock implements StockModel {
     public String name;
     public Float price;
     public String companyName;
@@ -24,7 +24,7 @@ public class Stock implements StockModel{
     }
 
     public void adjustPrice(Float newPrice) {
-        if(newPrice > 0) {
+        if (newPrice > 0) {
             this.price = newPrice;
         }
     }
@@ -48,6 +48,7 @@ public class Stock implements StockModel{
     public void setPrice(Float price) {
         this.price = price;
     }
+
     public String getCompanyName() {
         return companyName;
     }
@@ -55,6 +56,7 @@ public class Stock implements StockModel{
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
     }
+
     public void setMarketCap(String marketCap) {
         this.marketCap = marketCap;
     }

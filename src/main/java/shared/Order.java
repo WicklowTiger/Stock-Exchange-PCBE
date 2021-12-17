@@ -13,11 +13,12 @@ public class Order implements Comparable<Order> {
         this.stockName = stockName;
     }
 
-    public Order(float price, float amount){
+    public Order(float price, float amount) {
         this.price = price;
         this.amount = amount;
     }
-    public Order(float price, float amount, String stockName){
+
+    public Order(float price, float amount, String stockName) {
         this.price = price;
         this.amount = amount;
         this.stockName = stockName;

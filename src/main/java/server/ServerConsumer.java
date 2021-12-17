@@ -49,7 +49,9 @@ public class ServerConsumer<K, V> {
             ConsumerRecords<K, V> records = ServerConsumer.this.consumer.poll(Duration.ofMillis(100));
             for (ConsumerRecord<K, V> record : records) {
                 String key = "";
-                if(record.key() != null) { key = record.key().toString(); }
+                if (record.key() != null) {
+                    key = record.key().toString();
+                }
                 ServerActionsManager.putAction(
                         new Message<String, String>(
                                 key,

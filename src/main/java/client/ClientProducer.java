@@ -10,7 +10,6 @@ import shared.MessageOptions;
 import java.util.Properties;
 
 
-
 /**
  * Used by the {@link TradeManager} to send buy/sell messages to kafka.
  * <br>

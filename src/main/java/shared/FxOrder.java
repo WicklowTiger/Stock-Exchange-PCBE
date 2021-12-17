@@ -18,10 +18,12 @@ public class FxOrder {
     public String getOrderType() {
         return orderType;
     }
-    public String getAmount(){
+
+    public String getAmount() {
         return order.amount.toString();
     }
-    public String getPrice(){
+
+    public String getPrice() {
         return order.price.toString();
     }
 

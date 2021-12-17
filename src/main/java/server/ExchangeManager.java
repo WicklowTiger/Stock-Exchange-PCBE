@@ -51,14 +51,14 @@ public class ExchangeManager implements InvocationHandler {
         connectedUsers.put(message, 0);
         userDatabase.get(message).sellOrders.clear();
         userDatabase.get(message).buyOrders.clear();
-        for(Map.Entry<String, Stock> entry : stockDatabase.entrySet()) {
-            for(Order order : entry.getValue().sellOrders) {
-                if(order.userUid.equals(message)) {
+        for (Map.Entry<String, Stock> entry : stockDatabase.entrySet()) {
+            for (Order order : entry.getValue().sellOrders) {
+                if (order.userUid.equals(message)) {
                     userDatabase.get(message).sellOrders.add(order);
                 }
             }
-            for(Order order : entry.getValue().buyOrders) {
-                if(order.userUid.equals(message)) {
+            for (Order order : entry.getValue().buyOrders) {
+                if (order.userUid.equals(message)) {
                     userDatabase.get(message).buyOrders.add(order);
                 }
             }
@@ -96,7 +96,6 @@ public class ExchangeManager implements InvocationHandler {
             this.checkTrade(trade);
         } catch (Throwable e) {
             sendReply(trade.userUid, e.toString());
-            e.printStackTrace();
             return;
         }
         switch (trade.tradeType) {
@@ -172,7 +171,9 @@ public class ExchangeManager implements InvocationHandler {
             sendReply(trade.userUid, "Partially filled  " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + "$)");
             sendReply(sellOrders.get(0).userUid, "Filled  " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + trade.stockName + ")");
             sellOrders.remove(0);
-            if(Math.round(trade.stockAmount) == 0) { return; }
+            if (Math.round(trade.stockAmount) == 0) {
+                return;
+            }
             handleTrade(trade);
         } else { // partially fills order
             sellOrders.get(0).amount -= trade.stockAmount;
@@ -219,7 +220,9 @@ public class ExchangeManager implements InvocationHandler {
             sendReply(buyOrders.get(0).userUid, "Filled  " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + "$)");
             sendReply(trade.userUid, "Partially filled  " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + trade.stockName + ")");
             buyOrders.remove(0);
-            if(Math.round(trade.stockAmount) == 0) { return; }
+            if (Math.round(trade.stockAmount) == 0) {
+                return;
+            }
             handleTrade(trade);
         } else { // partially fills order
             buyOrders.get(0).amount -= trade.stockAmount;
@@ -238,8 +241,8 @@ public class ExchangeManager implements InvocationHandler {
      * Updates stock price on display ((first buy order + first sell order) / 2)
      */
     private void updateAllStockPrices() {
-        for(Map.Entry<String, Stock> entry : stockDatabase.entrySet()) {
-            if(entry.getValue().sellOrders.size() != 0 && entry.getValue().buyOrders.size() != 0) {
+        for (Map.Entry<String, Stock> entry : stockDatabase.entrySet()) {
+            if (entry.getValue().sellOrders.size() != 0 && entry.getValue().buyOrders.size() != 0) {
                 entry.getValue().adjustPrice((entry.getValue().sellOrders.get(0).price + entry.getValue().buyOrders.get(0).price) / 2);
             }
         }
@@ -322,6 +325,7 @@ public class ExchangeManager implements InvocationHandler {
     /**
      * Gets called every time a trade is attempted
      * Error messages get sent back to the client as an alert
+     *
      * @param trade or what remains of it
      */
     private void checkTrade(Trade trade) throws Throwable {
