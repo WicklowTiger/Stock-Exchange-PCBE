@@ -4,6 +4,10 @@ import client.jfx.HomeWindowController;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import shared.*;
+import shared.Action.Action;
+import shared.Action.ActionType;
+import shared.Message.Message;
+import shared.Message.MessageOptions;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
