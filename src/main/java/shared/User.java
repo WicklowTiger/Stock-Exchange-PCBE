@@ -61,7 +61,6 @@ public class User implements Identifiable {
 
     public static User fromString(String uid, String str) {
         String[] tmpArray = str.split("!ORDERS!");
-        System.out.println(Arrays.toString(tmpArray));
         User newUser = new User(uid, "", 0f);
         if (tmpArray.length >= 1) {
             String[] tempFields = tmpArray[0].split(",");

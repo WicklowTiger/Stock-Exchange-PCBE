@@ -173,8 +173,8 @@ public class ExchangeManager implements InvocationHandler {
             giveUserStock(trade.userUid, trade.stockName, stockToGive);
             withdrawBalanceFromUser(trade.userUid, balanceToTake);
             giveUserBalance(sellOrders.get(0).userUid, balanceToTake);
-            sendReply(trade.userUid, "Partially filled  " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + "$)");
-            sendReply(sellOrders.get(0).userUid, "Filled  " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + trade.stockName + ")");
+            sendReply(trade.userUid, "Partially filled " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + " $)");
+            sendReply(sellOrders.get(0).userUid, "Filled " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + " " + trade.stockName + ")");
             sellOrders.remove(0);
             if (Math.round(trade.stockAmount) == 0) {
                 return;
@@ -187,8 +187,8 @@ public class ExchangeManager implements InvocationHandler {
             giveUserStock(trade.userUid, trade.stockName, stockToGive);
             withdrawBalanceFromUser(trade.userUid, balanceToTake);
             giveUserBalance(sellOrders.get(0).userUid, balanceToTake);
-            sendReply(trade.userUid, "Filled  " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + "$)");
-            sendReply(sellOrders.get(0).userUid, "Partially filled  " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + trade.stockName + ")");
+            sendReply(trade.userUid, "Filled " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + " $)");
+            sendReply(sellOrders.get(0).userUid, "Partially filled " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + " " + trade.stockName + ")");
         }
     }
 
@@ -222,8 +222,8 @@ public class ExchangeManager implements InvocationHandler {
             giveUserStock(buyOrders.get(0).userUid, trade.stockName, stockToGive);
             giveUserBalance(trade.userUid, balanceToTake);
             withdrawStockFromUser(trade.userUid, trade.stockName, stockToGive);
-            sendReply(buyOrders.get(0).userUid, "Filled  " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + "$)");
-            sendReply(trade.userUid, "Partially filled  " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + trade.stockName + ")");
+            sendReply(buyOrders.get(0).userUid, "Filled " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + " $)");
+            sendReply(trade.userUid, "Partially filled " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + " " + trade.stockName + ")");
             buyOrders.remove(0);
             if (Math.round(trade.stockAmount) == 0) {
                 return;
@@ -236,8 +236,8 @@ public class ExchangeManager implements InvocationHandler {
             giveUserStock(buyOrders.get(0).userUid, trade.stockName, stockToGive);
             giveUserBalance(trade.userUid, balanceToTake);
             withdrawStockFromUser(trade.userUid, trade.stockName, stockToGive);
-            sendReply(buyOrders.get(0).userUid, "Partially filled  " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + "$)");
-            sendReply(trade.userUid, "Filled  " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + trade.stockName + ")");
+            sendReply(buyOrders.get(0).userUid, "Partially filled " + trade.stockName + " buy for " + stockToGive + " (" + balanceToTake + " $)");
+            sendReply(trade.userUid, "Filled " + trade.stockName + " sell for " + balanceToTake + "$" + " (" + stockToGive + " " + trade.stockName + ")");
         }
     }
 
