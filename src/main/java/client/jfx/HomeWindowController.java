@@ -78,6 +78,8 @@ public class HomeWindowController implements Initializable {
     private Text userBalance;
     @FXML
     private Text stockBalance;
+    @FXML
+    private Text currentPrice;
 
     private static final ObservableList<Stock> dataList = FXCollections.observableArrayList();
     private static ObservableList<Order> buyList = FXCollections.observableArrayList();
@@ -178,7 +180,7 @@ public class HomeWindowController implements Initializable {
             recommended.setText(Technical.getRandomTechnical());
             companyName.setText(stock.getCompanyName());
             companyMC.setText(stock.getMarketCap());
-
+            currentPrice.setText(stock.getPrice().toString());
         }
     }
 

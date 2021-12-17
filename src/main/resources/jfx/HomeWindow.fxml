@@ -9,11 +9,11 @@
 
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="608.0" prefWidth="840.0" styleClass="background" stylesheets="jfx/PCBE.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.jfx.HomeWindowController">
    <children>
-      <AnchorPane layoutX="14.0" layoutY="77.0" prefHeight="480.0" prefWidth="176.0">
+      <AnchorPane layoutX="14.0" layoutY="77.0" prefHeight="480.0" prefWidth="159.0">
          <children>
             <TextField fx:id="filterField" layoutX="7.0" layoutY="54.0" prefHeight="25.0" prefWidth="163.0" styleClass="field" />
             <Text layoutX="14.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Search Stock" />
-            <TableView fx:id="tableview" layoutX="9.0" layoutY="93.0" prefHeight="421.0" prefWidth="159.0" styleClass="table">
+            <TableView fx:id="tableview" layoutX="9.0" layoutY="93.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="161.0" prefHeight="421.0" prefWidth="161.0" styleClass="table">
                <columns>
                   <TableColumn fx:id="name" prefWidth="77.0" text="Name" />
                   <TableColumn fx:id="price" prefWidth="81.0" text="Price" />
@@ -75,24 +75,32 @@
             </Text>
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="561.0" layoutY="103.0" prefHeight="473.0" prefWidth="131.0">
+      <AnchorPane layoutX="561.0" layoutY="77.0" prefHeight="514.0" prefWidth="131.0">
          <children>
-            <Text fx:id="currentPrice" layoutX="15.0" layoutY="248.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="101.0">
+            <Text fx:id="currentPrice" layoutX="15.0" layoutY="265.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="101.0">
                <font>
                   <Font size="20.0" />
                </font>
             </Text>
-            <TableView fx:id="sellTable" layoutX="11.0" prefHeight="229.0" prefWidth="114.0" styleClass="table">
+            <TableView fx:id="sellTable" layoutX="11.0" layoutY="14.0" minWidth="115.0" prefHeight="215.0" prefWidth="115.0">
                <columns>
                   <TableColumn fx:id="sellOrdersPrice" prefWidth="55.0" text="Price" />
                   <TableColumn fx:id="sellOrdersAmount" prefWidth="58.0" text="Amount" />
                </columns>
+               <styleClass>
+                  <String fx:value="table" />
+                  <String fx:value="table-row-sell" />
+               </styleClass>
             </TableView>
-            <TableView fx:id="buyTable" layoutX="11.0" layoutY="259.0" prefHeight="229.0" prefWidth="114.0" styleClass="table">
+            <TableView fx:id="buyTable" layoutX="11.0" layoutY="285.0" minWidth="115.0" prefHeight="215.0" prefWidth="115.0">
                <columns>
                   <TableColumn fx:id="buyOrdersPrice" prefWidth="55.0" text="Price" />
                   <TableColumn fx:id="buyOrdersAmount" prefWidth="58.0" text="Amount" />
                </columns>
+               <styleClass>
+                  <String fx:value="table" />
+                  <String fx:value="table-row-buy" />
+               </styleClass>
             </TableView>
          </children>
       </AnchorPane>
@@ -141,7 +149,7 @@
             <Font size="20.0" />
          </font>
       </Text>
-      <TableView fx:id="myOrders" layoutX="211.0" layoutY="430.0" prefHeight="161.0" prefWidth="334.0" styleClass="table">
+      <TableView fx:id="myOrders" layoutX="211.0" layoutY="430.0" minWidth="337.0" prefHeight="161.0" prefWidth="337.0" styleClass="table">
         <columns>
           <TableColumn fx:id="myName" prefWidth="83.5" text="Name" />
           <TableColumn fx:id="myType" prefWidth="83.5" text="Type" />
