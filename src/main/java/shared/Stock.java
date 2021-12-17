@@ -23,6 +23,12 @@ public class Stock implements StockModel{
         this.price = price;
     }
 
+    public void adjustPrice(Float newPrice) {
+        if(newPrice > 0) {
+            this.price = newPrice;
+        }
+    }
+
     public String getName() {
         return this.name;
     }

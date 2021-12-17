@@ -9,36 +9,47 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Singleton manager for processing and distributing client actions
+ */
 public class ClientActionsManager {
-    private static final ConcurrentHashMap<Integer, Action> actionQueue= new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Integer, Action> actionQueue = new ConcurrentHashMap<>();
     private static ClientProducer<String, String> heartbeatProducer;
     private static ClientActionsManager inst = null;
     private final ClientConsumer<String, String> consumer;
     private final TradeManager tradeManager;
     private Thread consumerThread = null;
     private Thread pollingThread = null;
-    private Thread hearbeatThread = null;
+    private Thread heartbeatThread = null;
 
     /**Initializes trade manager and waits for homeWindowController before issuing any action*/
-    private ClientActionsManager() {
-        heartbeatProducer = new ClientProducer<String, String>(new StringSerializer(), new StringSerializer(), "keepAlive");
-        this.hearbeatThread = new Thread(this::keepAlive);
-        this.hearbeatThread.start();
-        consumer = new ClientConsumer<String, String>(new StringDeserializer(), new StringDeserializer(), Const.clientListenTopics);
+    private ClientActionsManager(String userUid) {
+        // Initialize heartbeat and kafka objects
+        heartbeatProducer = new ClientProducer<>(new StringSerializer(), new StringSerializer(), "keepAlive");
+        (this.heartbeatThread = new Thread(this::heartbeat)).start();
+        consumer = new ClientConsumer<>(new StringDeserializer(), new StringDeserializer(), Const.clientListenTopics, userUid);
+
+        // Initialize TradeManager
         tradeManager = TradeManager.getInstance();
-        tradeManager.setUser(new User(Const.defaultUser.uid, "", 0f));
+        tradeManager.setUser(new User(userUid, "", 0f));
+
+        // Wait for homeWindowController before starting consumer thread
         HomeWindowController homeWindowController = HomeWindowController.getInstance();
-        this.consumerThread = new Thread(consumer::startListening);
-        this.consumerThread.start();
+        (this.consumerThread = new Thread(consumer::startListening)).start();
     }
 
-    public static ClientActionsManager getInstance() {
+    public static ClientActionsManager getInstance(String userUid) {
         if(inst == null) {
-            inst = new ClientActionsManager();
+            inst = new ClientActionsManager(userUid);
         }
         return inst;
     }
 
+    /**
+     * Converts kafka messages received from consumer into Actions
+     * @param message kafka record wrapper
+     * @return {@link Action}
+     */
     public static Action messageToAction(Message<String, String> message) {
         switch (message.topic) {
             case TRADE_REPLIES:
@@ -60,6 +71,10 @@ public class ClientActionsManager {
         actionQueue.put(Action.generateKey(), action);
     }
 
+    /**
+     * Polls the actionQueue and decides
+     * who is responsible for handling each action
+     */
     public void run() {
         if(this.pollingThread != null) {
             this.pollingThread.interrupt();
@@ -75,6 +90,7 @@ public class ClientActionsManager {
                         case UPDATE_USER:
                             if(tradeManager.getUser().uid.equals(entry.getValue().payload.split(",")[0])) {
                                 tradeManager.updateUser(entry.getValue().payload);
+                                HomeWindowController.updateUser(tradeManager.getUser());
                             }
                             break;
                         case ACK_REPLY:
@@ -106,12 +122,16 @@ public class ClientActionsManager {
     public void stop() {
         this.consumerThread.interrupt();
         this.pollingThread.interrupt();
-        this.hearbeatThread.interrupt();
+        this.heartbeatThread.interrupt();
         heartbeatProducer.stop();
         consumer.stop();
     }
 
-    private void keepAlive() {
+    /**
+     * Sends a message to the server containing the user's uid
+     * This will keep the user connected making him receive updates
+     */
+    private void heartbeat() {
         while(true) {
             if(tradeManager != null && tradeManager.getUser() != null) {
                 heartbeatProducer.sendMessage(tradeManager.getUser().uid, new MessageOptions<>());

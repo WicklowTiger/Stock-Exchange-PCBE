@@ -1,6 +1,5 @@
 package server;
 
-import client.jfx.HomeWindowController;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import shared.*;
 
@@ -8,29 +7,39 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Singleton manager for processing and distributing server actions
+ */
 public class ServerActionsManager {
-    private static final ConcurrentHashMap<Integer, ServerAction> actionQueue= new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Integer, ServerAction> actionQueue = new ConcurrentHashMap<>();
     private static ServerActionsManager inst = null;
     private final ServerConsumer<String, String> consumer;
     private final ExchangeManager exchangeManager;
     private Thread consumerThread = null;
     private Thread pollingThread = null;
 
-    /**Initializes exchange manager and consumer thread*/
+    /**
+     * Initializes exchange manager and consumer thread
+     */
     private ServerActionsManager() {
-        consumer = new ServerConsumer<String, String>(new StringDeserializer(), new StringDeserializer(), Const.serverListenTopics);
+        consumer = new ServerConsumer<>(new StringDeserializer(), new StringDeserializer(), Const.serverListenTopics);
         exchangeManager = ExchangeManager.getInstance();
-        this.consumerThread = new Thread(consumer::startListening);
-        this.consumerThread.start();
+        (this.consumerThread = new Thread(consumer::startListening)).start();
     }
 
     public static ServerActionsManager getInstance() {
-        if(inst == null) {
+        if (inst == null) {
             inst = new ServerActionsManager();
         }
         return inst;
     }
 
+    /**
+     * Converts kafka messages received from consumer into ServerActions
+     *
+     * @param message kafka record wrapper
+     * @return {@link ServerAction}
+     */
     public static ServerAction messageToAction(Message<String, String> message) {
         switch (message.topic) {
             case TRADE_MESSAGES:
@@ -50,12 +59,16 @@ public class ServerActionsManager {
         actionQueue.put(Action.generateKey(), action);
     }
 
+    /**
+     * Polls the actionQueue and decides
+     * who is responsible for handling each action
+     */
     public void run() {
-        if(this.pollingThread != null) {
+        if (this.pollingThread != null) {
             this.pollingThread.interrupt();
         }
         this.pollingThread = new Thread(() -> {
-            while(true) {
+            while (true) {
                 if (!actionQueue.isEmpty()) {
                     Map.Entry<Integer, ServerAction> entry = actionQueue.entrySet().iterator().next();
                     switch (entry.getValue().actionType) {

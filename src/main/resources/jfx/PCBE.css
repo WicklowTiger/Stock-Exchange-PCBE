@@ -86,3 +86,29 @@ Text{
 #sellButton{
 	-fx-background-color: linear-gradient(from 100% 0% to 100% 150%, red 30%, black 100%);
 }
+.table .scroll-bar * {
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+
+}
+.table-row-buy .table-row-cell: odd{
+    -fx-background-color: #005621;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em;
+}
+.table-row-buy .table-row-cell: even{
+    -fx-background-color: #00702B;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em;
+}
+.table-row-sell .table-row-cell: odd{
+    -fx-background-color: #9C0101;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em;
+}
+.table-row-sell .table-row-cell: even{
+    -fx-background-color: #700000;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em;
+}
