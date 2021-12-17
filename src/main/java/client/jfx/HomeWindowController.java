@@ -139,7 +139,10 @@ public class HomeWindowController implements Initializable {
 
         tableview.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
-                this.selectStock();
+                if(inst.tableview.getSelectionModel().getSelectedItem()!=null){
+                    this.selectStock();
+                }
+
             }
         });
 
