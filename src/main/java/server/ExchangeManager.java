@@ -50,6 +50,20 @@ public class ExchangeManager implements InvocationHandler {
             System.out.println("User " + message + " connected to the server!");
         }
         connectedUsers.put(message, 0);
+        userDatabase.get(message).sellOrders.clear();
+        userDatabase.get(message).buyOrders.clear();
+        for(Map.Entry<String, Stock> entry : stockDatabase.entrySet()) {
+            for(Order order : entry.getValue().sellOrders) {
+                if(order.userUid.equals(message)) {
+                    userDatabase.get(message).sellOrders.add(order);
+                }
+            }
+            for(Order order : entry.getValue().buyOrders) {
+                if(order.userUid.equals(message)) {
+                    userDatabase.get(message).buyOrders.add(order);
+                }
+            }
+        }
         serverProducer.sendMessage("userUpdates", userDatabase.get(message).toString(), new MessageOptions<String>(message));
     }
 
