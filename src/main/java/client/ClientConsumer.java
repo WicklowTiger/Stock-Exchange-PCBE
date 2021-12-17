@@ -22,13 +22,13 @@ public class ClientConsumer<K, V> {
     private final KafkaConsumer<K, V> consumer;
     private final ArrayList<String> topicsToReadFrom = new ArrayList<String>();
 
-    public <T extends Deserializer<K>, U extends Deserializer<V>> ClientConsumer(T keyDeserializer, U valueDeserializer, ArrayList<String> topics) {
+    public <T extends Deserializer<K>, U extends Deserializer<V>> ClientConsumer(T keyDeserializer, U valueDeserializer, ArrayList<String> topics, String userUid) {
         Properties properties = new Properties();
 
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, Const.bootstrapServerIP);
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer.getClass().getName());
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializer.getClass().getName());
-        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "clientConsumer");
+        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "clientConsumer - " + userUid);
         properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         this.consumer = new KafkaConsumer<K, V>(properties);
@@ -45,7 +45,9 @@ public class ClientConsumer<K, V> {
             ConsumerRecords<K, V> records = ClientConsumer.this.consumer.poll(Duration.ofMillis(100));
             for (ConsumerRecord<K, V> record : records) {
                 String key = "";
-                if(record.key() != null) { key = record.key().toString(); }
+                if (record.key() != null) {
+                    key = record.key().toString();
+                }
                 ClientActionsManager.putAction(
                         new Message<String, String>(
                                 key,

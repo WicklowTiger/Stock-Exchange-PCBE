@@ -11,15 +11,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Handles all trade actions by using the kafka producer {@link ClientProducer}
+ * Singleton manager that handles all trade actions by using the kafka producer {@link ClientProducer}
  */
 class TradeManager implements InvocationHandler {
     private static TradeManager inst = null;
     private static ClientProducer<String, String> clientProducer;
     private User user;
 
+    /**Initializes clientProducer for trade messages*/
     private TradeManager() {
-        clientProducer = new ClientProducer<String, String>(new StringSerializer(), new StringSerializer(), "tradeMessages");
+        clientProducer = new ClientProducer<>(new StringSerializer(), new StringSerializer(), "tradeMessages");
     }
 
     public static TradeManager getInstance() {
@@ -29,6 +30,10 @@ class TradeManager implements InvocationHandler {
         return inst;
     }
 
+    /**
+     * Handles sell messages coming from UI
+     * @param message (ex. MARKET_SELL,AAPL,35.0,3 - TradeType, Ticker, Price?, Amount)
+     */
     public void handleSellAction(String message) {
         try {
             TradeMessage tradeMessage = TradeMessage.fromString(this.user, message);
@@ -38,6 +43,10 @@ class TradeManager implements InvocationHandler {
         }
     }
 
+    /**
+     * Handles buy messages coming from UI
+     * @param message (ex. MARKET_BUY,AAPL,35.0,3 - TradeType, Ticker, Price?, Amount)
+     */
     public void handleBuyAction(String message) {
         try {
             TradeMessage tradeMessage = TradeMessage.fromString(this.user, message);
@@ -47,6 +56,9 @@ class TradeManager implements InvocationHandler {
         }
     }
 
+    /**
+     * See {@link User} fromString and toString for message formats
+     */
     public void updateUser(String message) {
         String[] tmpArray = message.split(",", 2);
         setUser(User.fromString(tmpArray[0], tmpArray[1]));
@@ -61,6 +73,9 @@ class TradeManager implements InvocationHandler {
         return this.user;
     }
 
+    /**
+     * Checks if order is market or limit and sends formatted message to kafka server
+     */
     public void sendBuy(TradeMessage tradeMessage) {
         if(tradeMessage.price == null) {
             clientProducer.sendMessage(TradeAction.MARKET_BUY.toString() + ',' + tradeMessage, new MessageOptions<String>());
@@ -69,6 +84,9 @@ class TradeManager implements InvocationHandler {
         }
     }
 
+    /**
+     * Checks if order is market or limit and sends formatted message to kafka server
+     */
     public void sendSell(TradeMessage tradeMessage) {
         if(tradeMessage.price == null) {
             clientProducer.sendMessage(TradeAction.MARKET_SELL.toString() + ',' + tradeMessage, new MessageOptions<String>());

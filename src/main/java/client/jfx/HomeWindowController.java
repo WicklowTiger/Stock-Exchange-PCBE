@@ -174,14 +174,12 @@ public class HomeWindowController implements Initializable {
     }
 
     public void showDetailedStockData() {
-        if (tableview.getSelectionModel().getSelectedItem() != null) {
-            Stock stock = tableview.getSelectionModel().getSelectedItem();
-            stockName.setText(stock.getName());
-            recommended.setText(Technical.getRandomTechnical());
-            companyName.setText(stock.getCompanyName());
-            companyMC.setText(stock.getMarketCap());
-            currentPrice.setText(stock.getPrice().toString());
-        }
+        Stock stock = tableview.getSelectionModel().getSelectedItem();
+        stockName.setText(stock.getName());
+        recommended.setText(Technical.getRandomTechnical());
+        companyName.setText(stock.getCompanyName());
+        companyMC.setText(stock.getMarketCap());
+        currentPrice.setText(stock.getPrice().toString());
     }
 
     public void buyStock(float amount, float price) {
@@ -190,7 +188,7 @@ public class HomeWindowController implements Initializable {
             Stock stock = tableview.getSelectionModel().getSelectedItem();
             if (orderType.toString().toLowerCase().equals("limit")) {
                 if (price > stock.price) {
-                    Alert sell_alert = new Alert(Alert.AlertType.INFORMATION, "Price needs to be lower than stock price for sell order");
+                    Alert sell_alert = new Alert(Alert.AlertType.INFORMATION, "Price needs to be lower than stock price for buy order");
                     sell_alert.show();
                 } else {
                     ClientActionsManager.putAction(new Action(ActionType.SEND_BUY, stock.getName() + "," + amount + "," + price));
@@ -364,6 +362,7 @@ public class HomeWindowController implements Initializable {
     }
 
     private void selectStock() {
+        if (tableview.getSelectionModel().getSelectedItem() == null) { return; }
         this.showDetailedStockData();
         sellList.clear();
         buyList.clear();
@@ -374,13 +373,9 @@ public class HomeWindowController implements Initializable {
             }
         });
         //Update stock balance
-        if(inst.tableview.getSelectionModel().getSelectedItem()!=null)
-        {
-            String selectedStockName = inst.tableview.getSelectionModel().getSelectedItem().getName();
-            if(fxStockBalance.containsKey(selectedStockName)){
-                inst.stockBalance.setText(fxStockBalance.get(selectedStockName).toString());
-            }
-
+        String selectedStockName = inst.tableview.getSelectionModel().getSelectedItem().getName();
+        if(fxStockBalance.containsKey(selectedStockName)){
+            inst.stockBalance.setText(fxStockBalance.get(selectedStockName).toString());
         }
     }
 
@@ -425,8 +420,7 @@ public class HomeWindowController implements Initializable {
     }
     public static void updateOrders(String message){
         decodeOrders(message);
-        if(inst.tableview.getSelectionModel().getSelectedItem()==null)
-            return;
+        if(inst.tableview.getSelectionModel().getSelectedItem()==null) { return; }
         sellList.clear();
         buyList.clear();
         dataList.forEach(stock->{
@@ -451,6 +445,12 @@ public class HomeWindowController implements Initializable {
             user.sellOrders.forEach(sellOrder->{
                 myOrderList.add(new FxOrder(sellOrder,sellOrder.stockName,"SELL"));
             });
+            if(inst.tableview.getSelectionModel().getSelectedItem() == null) { return; }
+            Stock selectedStock = inst.tableview.getSelectionModel().getSelectedItem();
+            if(fxStockBalance.containsKey(selectedStock.name)){
+                inst.stockBalance.setText(fxStockBalance.get(selectedStock.name).toString());
+            }
+            inst.currentPrice.setText(selectedStock.getPrice());
         });
 
     }
