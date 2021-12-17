@@ -5,9 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.apache.kafka.common.serialization.StringSerializer;
-import server.ServerProducer;
-import shared.MessageOptions;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,7 +44,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("HomeWindow"), 850, 600);
+        scene = new Scene(loadFXML("HomeWindow"), 830, 610);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
