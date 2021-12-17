@@ -1,6 +1,6 @@
 package shared;
 
-public class Order {
+public class Order implements Comparable<Order> {
     public String userUid;
     public Float price;
     public Float amount;
@@ -22,6 +22,11 @@ public class Order {
 
     public String getAmount() {
         return amount.toString();
+    }
+
+    @Override
+    public int compareTo(Order other) {
+        return Integer.compare(0, this.price.compareTo(other.price));
     }
 
     @Override
