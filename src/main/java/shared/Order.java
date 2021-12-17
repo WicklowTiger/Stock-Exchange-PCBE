@@ -39,4 +39,11 @@ public class Order implements Comparable<Order> {
     public String toString() {
         return price.toString() + '-' + amount.toString();
     }
+
+    public static Order fromString(String stockName, String str) {
+        String[] tmpArray = str.split("-");
+        tmpArray[0] = tmpArray[0].replace("B", "");
+        tmpArray[0] = tmpArray[0].replace("S", "");
+        return new Order(Float.parseFloat(tmpArray[0]), Float.parseFloat(tmpArray[1]), stockName);
+    }
 }

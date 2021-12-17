@@ -30,11 +30,46 @@ public class User implements Identifiable {
 
     @Override
     public String toString() {
-        return name + "," + balance;
+        StringBuilder userString = new StringBuilder();
+        userString.append(name).append(",").append(balance);
+        if(buyOrders.size() != 0 || sellOrders.size() != 0) {
+            userString.append("!ORDERS!");
+        }
+        for(Order order: buyOrders) {
+            userString.append(order.stockName).append(",B").append(order.toString()).append(';');
+        }
+        for(Order order: sellOrders) {
+            userString.append(order.stockName).append(",S").append(order.toString()).append(';');
+        }
+        if (userString.charAt(userString.toString().length() - 1) == ';') {
+            userString.deleteCharAt(userString.toString().length() - 1);
+        }
+        return userString.toString();
     }
 
     public static User fromString(String uid, String str) {
-        String[] tmpArray = str.split(",");
-        return new User(uid, tmpArray[0], Float.parseFloat(tmpArray[1]));
+        String[] tmpArray = str.split("!ORDERS!");
+        User newUser = new User(uid, "", 0f);
+        if(tmpArray.length == 1) {
+            String[] tempFields = tmpArray[0].split(",");
+            newUser = new User(uid, tempFields[0], Float.parseFloat(tempFields[1]));
+        }
+        if(tmpArray.length == 2) {
+            String[] tempOrders = tmpArray[1].split(";");
+            for(String orderStr: tempOrders) {
+                String[] tempOrderFields = orderStr.split(",");
+                switch (tempOrderFields[1].charAt(0)) {
+                    case 'B':
+                        newUser.buyOrders.add(Order.fromString(tempOrderFields[0], tempOrderFields[1]));
+                        break;
+                    case 'S':
+                    default:
+                        newUser.sellOrders.add(Order.fromString(tempOrderFields[0], tempOrderFields[1]));
+                        break;
+                }
+            }
+
+        }
+        return newUser;
     }
 }
