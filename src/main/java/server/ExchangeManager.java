@@ -2,6 +2,11 @@ package server;
 
 import org.apache.kafka.common.serialization.StringSerializer;
 import shared.*;
+import shared.Message.ErrorMessage;
+import shared.Message.MessageOptions;
+import shared.Order.Order;
+import shared.Stock.Stock;
+import shared.Trade.Trade;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

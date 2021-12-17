@@ -1,4 +1,4 @@
-package shared;
+package shared.Order;
 
 public class Order implements Comparable<Order> {
     public String userUid;

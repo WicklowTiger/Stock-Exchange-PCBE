@@ -1,4 +1,4 @@
-package shared;
+package shared.Order;
 
 public class FxOrder {
     public Order order = null;

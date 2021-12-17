@@ -1,5 +1,7 @@
-package shared;
+package shared.Message;
 
+
+import shared.Topic;
 
 public class Message<K, V> {
     public K key = null;

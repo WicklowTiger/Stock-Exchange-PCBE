@@ -1,4 +1,4 @@
-package shared;
+package shared.Action;
 
 public enum ActionType {
     UPDATE_STOCKS,

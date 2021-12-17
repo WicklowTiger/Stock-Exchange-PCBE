@@ -2,6 +2,10 @@ package server;
 
 import org.apache.kafka.common.serialization.StringDeserializer;
 import shared.*;
+import shared.Action.Action;
+import shared.Message.Message;
+import shared.ServerAction.ServerAction;
+import shared.ServerAction.ServerActionType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

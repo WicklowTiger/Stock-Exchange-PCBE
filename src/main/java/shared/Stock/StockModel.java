@@ -1,4 +1,4 @@
-package shared;
+package shared.Stock;
 
 public interface StockModel {
     String name = null;

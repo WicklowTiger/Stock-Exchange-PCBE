@@ -8,7 +8,7 @@ public enum Topic {
     USER_UPDATES,
     NONE;
 
-    static String toString(Topic topic) {
+    public static String toString(Topic topic) {
         switch (topic) {
             case TRADE_REPLIES:
                 return "tradeReplies";
@@ -25,7 +25,7 @@ public enum Topic {
         }
     }
 
-    static Topic fromString(String str) {
+    public static Topic fromString(String str) {
         switch (str) {
             case "tradeReplies":
                 return Topic.TRADE_REPLIES;

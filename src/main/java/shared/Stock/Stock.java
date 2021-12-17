@@ -1,4 +1,6 @@
-package shared;
+package shared.Stock;
+
+import shared.Order.Order;
 
 import java.util.ArrayList;
 

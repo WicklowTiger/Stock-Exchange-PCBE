@@ -1,15 +1,15 @@
-package shared;
+package shared.Action;
 
-public class ServerAction {
-    public ServerActionType actionType = null;
+public class Action {
+    public ActionType actionType = null;
     public String payload = null;
 
-    public ServerAction(ServerActionType actionType, String payload) {
+    public Action(ActionType actionType, String payload) {
         this.actionType = actionType;
         this.payload = payload;
     }
 
-    public ServerAction() {
+    public Action() {
 
     }
 
@@ -19,4 +19,3 @@ public class ServerAction {
 
     private static Integer key = 0;
 }
-

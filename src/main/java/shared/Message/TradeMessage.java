@@ -1,4 +1,6 @@
-package shared;
+package shared.Message;
+
+import shared.User;
 
 public class TradeMessage {
     public User user = null;

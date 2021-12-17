@@ -1,7 +1,5 @@
 package server;
 
-import client.ClientActionsManager;
-import client.ClientConsumer;
 import org.apache.kafka.common.serialization.Deserializer;
 import shared.Const;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -10,7 +8,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import shared.Message;
+import shared.Message.Message;
 
 import java.time.Duration;
 import java.util.ArrayList;

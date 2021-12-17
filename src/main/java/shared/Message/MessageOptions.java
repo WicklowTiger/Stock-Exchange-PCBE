@@ -1,4 +1,4 @@
-package shared;
+package shared.Message;
 
 public class MessageOptions<T> {
     public T key = null;

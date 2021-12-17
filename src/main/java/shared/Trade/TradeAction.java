@@ -1,4 +1,4 @@
-package shared;
+package shared.Trade;
 
 public enum TradeAction {
     MARKET_BUY,

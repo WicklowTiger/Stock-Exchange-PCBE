@@ -1,4 +1,4 @@
-package shared;
+package shared.ServerAction;
 
 public enum ServerActionType {
     RECEIVED_TRADE,

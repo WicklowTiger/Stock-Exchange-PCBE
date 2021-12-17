@@ -1,4 +1,4 @@
-package shared;
+package shared.Trade;
 
 /**
  * {@link server.ExchangeManager} uses this object to handle trade messages

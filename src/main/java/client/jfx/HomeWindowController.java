@@ -11,7 +11,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -19,6 +18,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import shared.*;
+import shared.Action.Action;
+import shared.Action.ActionType;
+import shared.Order.FxOrder;
+import shared.Order.Order;
+import shared.Stock.Stock;
 
 public class HomeWindowController implements Initializable {
     private static HomeWindowController inst = null;
@@ -326,7 +330,9 @@ public class HomeWindowController implements Initializable {
             inst.tableview.getSelectionModel().select(selectedPosition);
             inst.tableview.getFocusModel().focus(selectedPosition);
         }
-        updateOrders(tempArr[1]);
+        if(tempArr.length >= 2) {
+            updateOrders(tempArr[1]);
+        }
     }
 
     public static void openDialogBox(String message) {

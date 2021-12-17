@@ -1,9 +1,9 @@
 package client;
 
 import org.apache.kafka.common.serialization.StringSerializer;
-import shared.MessageOptions;
-import shared.TradeAction;
-import shared.TradeMessage;
+import shared.Message.MessageOptions;
+import shared.Trade.TradeAction;
+import shared.Message.TradeMessage;
 import shared.User;
 
 import java.lang.reflect.InvocationHandler;

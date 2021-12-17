@@ -5,7 +5,7 @@ import org.apache.kafka.common.serialization.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import shared.Const;
-import shared.MessageOptions;
+import shared.Message.MessageOptions;
 
 import java.util.Properties;
 

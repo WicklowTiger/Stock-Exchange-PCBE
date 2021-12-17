@@ -1,4 +1,4 @@
-package shared;
+package shared.Message;
 
 public enum ErrorMessage {
     NO_ORDERS,
