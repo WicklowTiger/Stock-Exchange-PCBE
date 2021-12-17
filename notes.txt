@@ -8,8 +8,7 @@ kafka-topics -zookeeper localhost:2181 -topic <topic_name> -create --partitions 
 
 kafka-topics --list --zookeeper localhost:2181
 
-TODO: sort sellOrders and buyOrders
-TODO: make client consumer group unique
+TODO: make client consumer group unique (last prio)
 TODO daca e timp: update stock price depending on buy/sellorders
 
 !!!!!!!!!!!!!!!!!!! UNDER NO CIRCUMSTANCE ATTEMPT TO DELETE A TOPIC !!!!!!!!!!!!!!!!!!!!!!!!
