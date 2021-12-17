@@ -6,10 +6,11 @@ public class Order implements Comparable<Order> {
     public Float amount;
     public String stockName;
 
-    public Order(String userUid, float price, float amount){
+    public Order(String userUid, float price, float amount, String stockName) {
         this.userUid = userUid;
         this.price = price;
         this.amount = amount;
+        this.stockName = stockName;
     }
 
     public Order(float price, float amount){
