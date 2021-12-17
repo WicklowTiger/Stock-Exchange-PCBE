@@ -22,7 +22,7 @@ public class ClientActionsManager {
     /**Initializes trade manager and waits for homeWindowController before issuing any action*/
     private ClientActionsManager() {
         heartbeatProducer = new ClientProducer<String, String>(new StringSerializer(), new StringSerializer(), "keepAlive");
-        this.hearbeatThread = new Thread(this::keepAlive);
+        this.hearbeatThread = new Thread(this::heartbeat);
         this.hearbeatThread.start();
         consumer = new ClientConsumer<String, String>(new StringDeserializer(), new StringDeserializer(), Const.clientListenTopics);
         tradeManager = TradeManager.getInstance();
@@ -111,7 +111,7 @@ public class ClientActionsManager {
         consumer.stop();
     }
 
-    private void keepAlive() {
+    private void heartbeat() {
         while(true) {
             if(tradeManager != null && tradeManager.getUser() != null) {
                 heartbeatProducer.sendMessage(tradeManager.getUser().uid, new MessageOptions<>());
