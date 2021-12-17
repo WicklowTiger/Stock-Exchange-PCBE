@@ -39,7 +39,9 @@ Text{
 	-fx-background-color: #111B33;
 	-fx-text-fill:#F0EAD6;
 	-fx-fill: #111B33;
-	-fx-border:2px solid #133e7c;
+	-fx-border-width: 0px;
+	-fx-border-style: solid;
+	-fx-border-color: #133e7c;
 	-fx-focus-color:#314D8F;
 	-fx-control-inner-background:#111A31;
 	-fx-effect:dropshadow(three-pass-box, rgba(0,0,0,0.8), 5, 0, 0, 0);
@@ -47,7 +49,9 @@ Text{
 
 .combo-box{
 	-fx-text-fill:#F0EAD6;
-	-fx-border:2px solid #133e7c;
+	-fx-border-width: 0px;
+	-fx-border-style: solid;
+	-fx-border-color: #133e7c;
 	-fx-focus-color:#314D8F;
 	-fx-control-inner-background:#111A31;
 }
@@ -92,22 +96,22 @@ Text{
     -fx-max-width: 0;
 
 }
-.table-row-buy .table-row-cell: odd{
+.table-row-buy .table-row-cell:odd{
     -fx-background-color: #005621;
     -fx-background-insets: 0, 0 0 1 0;
     -fx-padding: 0.0em;
 }
-.table-row-buy .table-row-cell: even{
+.table-row-buy .table-row-cell:even{
     -fx-background-color: #00702B;
     -fx-background-insets: 0, 0 0 1 0;
     -fx-padding: 0.0em;
 }
-.table-row-sell .table-row-cell: odd{
+.table-row-sell .table-row-cell:odd{
     -fx-background-color: #9C0101;
     -fx-background-insets: 0, 0 0 1 0;
     -fx-padding: 0.0em;
 }
-.table-row-sell .table-row-cell: even{
+.table-row-sell .table-row-cell:even{
     -fx-background-color: #700000;
     -fx-background-insets: 0, 0 0 1 0;
     -fx-padding: 0.0em;
