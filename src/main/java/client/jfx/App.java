@@ -50,6 +50,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("HomeWindow"), 850, 600);
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 

@@ -6,18 +6,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.collections.FXCollections?>
-<?import java.net.URL?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="608.0" prefWidth="840.0" styleClass="background" stylesheets="@jfx/PCBE.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.jfx.HomeWindowController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="608.0" prefWidth="840.0" styleClass="background" stylesheets="jfx/PCBE.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.jfx.HomeWindowController">
    <children>
       <AnchorPane layoutX="14.0" layoutY="77.0" prefHeight="480.0" prefWidth="176.0">
          <children>
             <TextField fx:id="filterField" layoutX="7.0" layoutY="54.0" prefHeight="25.0" prefWidth="163.0" styleClass="field" />
             <Text layoutX="14.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="indicator" text="Search Stock" />
-            <TableView fx:id="tableview" layoutX="9.0" layoutY="93.0" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="421.0" prefWidth="159.0" styleClass="table">
+            <TableView fx:id="tableview" layoutX="9.0" layoutY="93.0" prefHeight="421.0" prefWidth="159.0" styleClass="table">
                <columns>
-                  <TableColumn fx:id="name" maxWidth="1000.0" prefWidth="78.0" text="Name" />
-                  <TableColumn fx:id="price" maxWidth="1000.0" prefWidth="78.0" text="Price" />
+                  <TableColumn fx:id="name" prefWidth="77.0" text="Name" />
+                  <TableColumn fx:id="price" prefWidth="81.0" text="Price" />
                </columns>
             </TableView>
          </children>
@@ -29,7 +28,7 @@
                   <Font size="24.0" />
                </font>
             </Text>
-            <Text fx:id="stockName" layoutX="108.0" layoutY="148.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="110.0">
+            <Text fx:id="stockName" layoutX="112.0" layoutY="148.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="159.0">
                <font>
                   <Font size="20.0" />
                </font>
@@ -59,7 +58,7 @@
                   <Font size="19.0" />
                </font>
             </Text>
-            <Text fx:id="change24" layoutX="85.0" layoutY="298.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="67.529296875" AnchorPane.leftAnchor="84.529296875" AnchorPane.rightAnchor="180.470703125">
+            <Text fx:id="stockBalance" layoutX="85.0" layoutY="298.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="67.529296875" AnchorPane.leftAnchor="84.529296875" AnchorPane.rightAnchor="180.470703125">
                <font>
                   <Font size="19.0" />
                </font>
@@ -83,16 +82,16 @@
                   <Font size="20.0" />
                </font>
             </Text>
-            <TableView fx:id="sellTable" layoutX="11.0" prefHeight="229.0" prefWidth="110.0" styleClass="table">
+            <TableView fx:id="sellTable" layoutX="11.0" prefHeight="229.0" prefWidth="114.0" styleClass="table">
                <columns>
                   <TableColumn fx:id="sellOrdersPrice" prefWidth="55.0" text="Price" />
-                  <TableColumn fx:id="sellOrdersAmount" prefWidth="55.0" text="Amount" />
+                  <TableColumn fx:id="sellOrdersAmount" prefWidth="58.0" text="Amount" />
                </columns>
             </TableView>
-            <TableView fx:id="buyTable" layoutX="11.0" layoutY="259.0" prefHeight="229.0" prefWidth="110.0" styleClass="table">
+            <TableView fx:id="buyTable" layoutX="11.0" layoutY="259.0" prefHeight="229.0" prefWidth="114.0" styleClass="table">
                <columns>
                   <TableColumn fx:id="buyOrdersPrice" prefWidth="55.0" text="Price" />
-                  <TableColumn fx:id="buyOrdersAmount" prefWidth="55.0" text="Amount" />
+                  <TableColumn fx:id="buyOrdersAmount" prefWidth="58.0" text="Amount" />
                </columns>
             </TableView>
          </children>

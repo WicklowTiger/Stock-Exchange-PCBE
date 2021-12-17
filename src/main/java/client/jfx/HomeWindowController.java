@@ -1,10 +1,7 @@
 package client.jfx;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -68,15 +65,15 @@ public class HomeWindowController implements Initializable {
     @FXML
     private Text priceLabel;
     @FXML
-    private TableView<Order> myOrders;
+    private TableView<FxOrder> myOrders;
     @FXML
-    private TableColumn<Order,String> myName;
+    private TableColumn<FxOrder,String> myName;
     @FXML
-    private TableColumn<Order,String> myType;
+    private TableColumn<FxOrder,String> myType;
     @FXML
-    private TableColumn<Order,String> myPrice;
+    private TableColumn<FxOrder,String> myPrice;
     @FXML
-    private TableColumn<Order,String> myAmount;
+    private TableColumn<FxOrder,String> myAmount;
     @FXML
     private Text userBalance;
     @FXML
@@ -85,7 +82,8 @@ public class HomeWindowController implements Initializable {
     private static final ObservableList<Stock> dataList = FXCollections.observableArrayList();
     private static ObservableList<Order> buyList = FXCollections.observableArrayList();
     private static ObservableList<Order> sellList = FXCollections.observableArrayList();
-    private static ObservableList<Order> myOrderList = FXCollections.observableArrayList();
+    private static ObservableList<FxOrder> myOrderList = FXCollections.observableArrayList();
+    private static Map<String,Float> fxStockBalance = new HashMap<>();
 
     enum Technical {
         NEUTRAL,
@@ -107,6 +105,11 @@ public class HomeWindowController implements Initializable {
         buyOrdersPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
         sellOrdersAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
         buyOrdersAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        myName.setCellValueFactory(new PropertyValueFactory<>("stockName"));
+        myType.setCellValueFactory(new PropertyValueFactory<>("orderType"));
+        myPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        myAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+
 
         FilteredList<Stock> filteredData = new FilteredList<>(dataList);
 
@@ -132,6 +135,7 @@ public class HomeWindowController implements Initializable {
 
         sellTable.setItems(sellList);
         buyTable.setItems(buyList);
+        myOrders.setItems(myOrderList);
 
         tableview.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
@@ -364,7 +368,15 @@ public class HomeWindowController implements Initializable {
                 buyList.addAll(stock.buyOrders);
             }
         });
-        //TODO: get user data and put it in fields (stock balance)
+        //Update stock balance
+        if(inst.tableview.getSelectionModel().getSelectedItem()!=null)
+        {
+            String selectedStockName = inst.tableview.getSelectionModel().getSelectedItem().getName();
+            if(fxStockBalance.containsKey(selectedStockName)){
+                inst.stockBalance.setText(fxStockBalance.get(selectedStockName).toString());
+            }
+
+        }
     }
 
     public static void decodeOrders(String message){
@@ -388,14 +400,14 @@ public class HomeWindowController implements Initializable {
                     if(orderType=='B'){
                         dataList.forEach(stock->{
                             if(stock.name.equals(stockName)){
-                                stock.buyOrders.add(new Order(price, amount));
+                                stock.buyOrders.add(new Order(price, amount,stockName));
                             }
                         });
                     }
                     else{
                         dataList.forEach(stock->{
                             if(stock.name.equals(stockName)){
-                                stock.sellOrders.add(new Order(price, amount));
+                                stock.sellOrders.add(new Order(price, amount,stockName));
                             }
                         });
                     }
@@ -420,5 +432,22 @@ public class HomeWindowController implements Initializable {
         });
     }
 
+    public static void updateUser(User user){
+        Platform.runLater(() -> {
+            //Update user balance
+            inst.userBalance.setText(user.balance.toString());
+            //Update stock balance for each stock
+            fxStockBalance.putAll(user.stockBalance);
+            //Update user's order list
+            myOrderList.clear();
+            user.buyOrders.forEach(buyOrder->{
+                myOrderList.add(new FxOrder(buyOrder,buyOrder.stockName,"BUY"));
+            });
+            user.sellOrders.forEach(sellOrder->{
+                myOrderList.add(new FxOrder(sellOrder,sellOrder.stockName,"SELL"));
+            });
+        });
+
+    }
 
 }
